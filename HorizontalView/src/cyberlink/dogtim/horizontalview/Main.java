@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -12,19 +13,31 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class Main extends Activity {
-
+    private static final String TAG = Main.class.getSimpleName();
+    
+    private LeakTest leak = null;
+    class LeakTest {
+        void trackLeak(){
+            Log.d(TAG,"Track Leak ! ! !");
+        }
+    }
     LinearLayout imageLayout;
-
+    LinearLayout timelineLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageLayout = (LinearLayout) findViewById(R.id.imageLayout);
+        timelineLayout = (LinearLayout) findViewById(R.id.timelineHorizontalScrollView);
+        if(leak == null){
+            leak = new LeakTest();
+        }
+        
         MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(this.getApplicationContext()); 
         ArrayList<String> Files_string = mediaStoreHelper.getImages();
-
         for (String file : Files_string) {
             imageLayout.addView(insertPhoto(file));
+            timelineLayout.addView(insertPhoto(file));
         }
     }
 

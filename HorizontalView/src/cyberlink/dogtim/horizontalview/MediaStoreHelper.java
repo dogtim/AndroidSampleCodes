@@ -11,7 +11,7 @@ public class MediaStoreHelper {
     private Context mContext;
     private static final String TAG = MediaStoreHelper.class.getSimpleName();
     
-    private int MAX_IMAGE_SIZE = 50;
+    private int MAX_IMAGE_SIZE = 30;
     public MediaStoreHelper(Context context){
         mContext = context;
     }

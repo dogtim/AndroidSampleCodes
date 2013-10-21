@@ -17,4 +17,11 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="ScrollStyle">
+        <item name="android:scrollbarThumbVertical">@drawable/scrollbar_vertical_thumb</item>
+        <item name="android:scrollbarTrackVertical">@drawable/scrollbar_vertical_track</item>
+        <item name="android:scrollbarThumbHorizontal">@drawable/scrollbar_vertical_thumb</item>
+        <item name="android:scrollbarTrackHorizontal">@drawable/scrollbar_vertical_track</item>
+        <item name="android:scrollbarSize">30dp</item>
+    </style>
 </resources>
