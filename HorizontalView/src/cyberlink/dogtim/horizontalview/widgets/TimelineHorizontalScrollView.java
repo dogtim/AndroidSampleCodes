@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -39,10 +40,10 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     public final static int PLAYHEAD_NORMAL = 1;
     public final static int PLAYHEAD_MOVE_OK = 2;
     public final static int PLAYHEAD_MOVE_NOT_OK = 3;
-
+    private static final String TAG = TimelineHorizontalScrollView.class.getSimpleName();
     // Instance variables
     //private final List<ScrollViewListener> mScrollListenerList;
-    private final Handler mHandler;
+    private final Handler mHandler = null;
     private final int mPlayheadMarginTop = 0;
     private final int mPlayheadMarginTopOk = 0;
     private final int mPlayheadMarginTopNotOk = 0;
@@ -50,7 +51,7 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     private final Drawable mNormalPlayheadDrawable = null;
     private final Drawable mMoveOkPlayheadDrawable = null;
     private final Drawable mMoveNotOkPlayheadDrawable = null;
-    private final int mHalfParentWidth;
+    private final int mHalfParentWidth = 0;
     private ScaleGestureDetector mScaleDetector;
     private int mLastScrollX;
     private boolean mIsScrolling;
@@ -74,14 +75,19 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
 
     public TimelineHorizontalScrollView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        /* 
+         * Add isInEditMode to make "Graphic Layout" could preview this view correctly
+         * */
+        if(!isInEditMode()){
+            Log.v(TAG, "not edit mode");
 
         mEnableUserScrolling = true;
         //mScrollListenerList = new ArrayList<ScrollViewListener>();
-        mHandler = new Handler();
+        //mHandler = new Handler();
 
         // Compute half the width of the screen (and therefore the parent view)
         final Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
-        mHalfParentWidth = display.getWidth() / 2;
+        //mHalfParentWidth = display.getWidth() / 2;
 
         // This value is shared by all children. It represents the width of
         // the left empty view.
@@ -101,6 +107,7 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
         mNormalPlayheadDrawable = resources.getDrawable(R.drawable.ic_playhead);
         mMoveOkPlayheadDrawable = resources.getDrawable(R.drawable.playhead_move_ok);
         mMoveNotOkPlayheadDrawable = resources.getDrawable(R.drawable.playhead_move_not_ok);*/
+        }
     }
 
     public TimelineHorizontalScrollView(Context context, AttributeSet attrs) {
@@ -209,7 +216,7 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     public void computeScroll() {
         super.computeScroll();
 
-        final int scrollX = getScrollX();
+        /*final int scrollX = getScrollX();
         if (mLastScrollX != scrollX) {
             mLastScrollX = scrollX;
 
@@ -221,17 +228,17 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
 
             final int scrollY = getScrollY();
             if (mIsScrolling) {
-/*                for (ScrollViewListener listener : mScrollListenerList) {
+                for (ScrollViewListener listener : mScrollListenerList) {
                     listener.onScrollProgress(this, scrollX, scrollY, mAppScroll);
-                }*/
+                }
             } else {
                 mIsScrolling = true;
 
-/*                for (ScrollViewListener listener : mScrollListenerList) {
+                for (ScrollViewListener listener : mScrollListenerList) {
                     listener.onScrollBegin(this, scrollX, scrollY, mAppScroll);
-                }*/
+                }
             }
-        }
+        }*/
     }
 
     @Override

@@ -6,6 +6,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
+    android:background="@android:color/black"
     tools:context=".Main" >
 
     <LinearLayout
@@ -18,7 +19,33 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_alignParentBottom="true">
-        <include layout="@layout/timeline" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/track_icon_duration"
+                        android:text="@string/duration"
+                        android:gravity="center"
+                        android:textColor="@android:color/white"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.33"
+                        android:contentDescription="@string/desc"
+                        android:src="@drawable/track_icon_video_photo" />
+                    <ImageView
+                        android:id="@+id/image_arrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.33"
+                        android:contentDescription="@string/desc"
+                        android:src="@drawable/track_icon_audio" />
+            </LinearLayout>
+            <include layout="@layout/timeline" />
     </LinearLayout>
 </RelativeLayout>
