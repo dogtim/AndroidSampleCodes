@@ -19,6 +19,8 @@ package cyberlink.dogtim.horizontalview.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
+import cyberlink.dogtim.horizontalview.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -42,8 +44,8 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     public final static int PLAYHEAD_MOVE_NOT_OK = 3;
     private static final String TAG = TimelineHorizontalScrollView.class.getSimpleName();
     // Instance variables
-    //private final List<ScrollViewListener> mScrollListenerList;
-    private final Handler mHandler = null;
+    private List<ScrollViewListener> mScrollListenerList;
+    private Handler mHandler;
     private final int mPlayheadMarginTop = 0;
     private final int mPlayheadMarginTopOk = 0;
     private final int mPlayheadMarginTopNotOk = 0;
@@ -51,7 +53,7 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     private final Drawable mNormalPlayheadDrawable = null;
     private final Drawable mMoveOkPlayheadDrawable = null;
     private final Drawable mMoveNotOkPlayheadDrawable = null;
-    private final int mHalfParentWidth = 0;
+    private int mHalfParentWidth;
     private ScaleGestureDetector mScaleDetector;
     private int mLastScrollX;
     private boolean mIsScrolling;
@@ -82,18 +84,18 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
             Log.v(TAG, "not edit mode");
 
         mEnableUserScrolling = true;
-        //mScrollListenerList = new ArrayList<ScrollViewListener>();
-        //mHandler = new Handler();
+        mScrollListenerList = new ArrayList<ScrollViewListener>();
+        mHandler = new Handler();
 
         // Compute half the width of the screen (and therefore the parent view)
         final Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
-        //mHalfParentWidth = display.getWidth() / 2;
+        mHalfParentWidth = display.getWidth() / 2;
 
         // This value is shared by all children. It represents the width of
         // the left empty view.
-/*        setTag(R.id.left_view_width, mHalfParentWidth);
+        setTag(R.id.left_view_width, mHalfParentWidth);
         setTag(R.id.playhead_offset, -1);
-        setTag(R.id.playhead_type, PLAYHEAD_NORMAL);*/
+        setTag(R.id.playhead_type, PLAYHEAD_NORMAL);
 
         final Resources resources = context.getResources();
 
@@ -158,16 +160,16 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     /**
      * @param listener The listener
      */
-/*    public void addScrollListener(ScrollViewListener listener) {
+    public void addScrollListener(ScrollViewListener listener) {
         mScrollListenerList.add(listener);
-    }*/
+    }
 
     /**
      * @param listener The listener
      */
-/*    public void removeScrollListener(ScrollViewListener listener) {
+    public void removeScrollListener(ScrollViewListener listener) {
         mScrollListenerList.remove(listener);
-    }*/
+    }
 
     /**
      * @return true if scrolling is in progress
@@ -216,7 +218,7 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     public void computeScroll() {
         super.computeScroll();
 
-        /*final int scrollX = getScrollX();
+        final int scrollX = getScrollX();
         if (mLastScrollX != scrollX) {
             mLastScrollX = scrollX;
 
@@ -238,7 +240,7 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
                     listener.onScrollBegin(this, scrollX, scrollY, mAppScroll);
                 }
             }
-        }*/
+        }
     }
 
     @Override

@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">HorizontalView</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="duration">duration</string>
 
+    <!-- Time related format strings displayed in the carousel below the project preview -->
+    <string name="hours_and_minutes"><xliff:g id="hours">%d</xliff:g> hrs <xliff:g id="minutes">%d</xliff:g> mins</string>
+    <string name="hour_and_minutes">1 hr <xliff:g id="minutes">%d</xliff:g> mins</string>
+    <string name="minutes"><xliff:g id="minutes">%d</xliff:g> mins</string>
+    <string name="minute_and_seconds">1 min <xliff:g id="seconds">%d</xliff:g> secs</string>
+    <string name="seconds"><xliff:g id="seconds">%d</xliff:g> secs</string>
 </resources>
+
