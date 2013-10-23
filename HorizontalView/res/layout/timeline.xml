@@ -17,7 +17,7 @@
         <LinearLayout
             android:id="@+id/sperate_line"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/playhead_layout_height"
+            android:layout_height="wrap_content"
             android:background="@drawable/timeline_background_line"
             android:layout_below="@id/timeline_playhead"
             android:orientation="horizontal"/>
