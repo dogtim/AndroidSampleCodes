@@ -24,7 +24,7 @@ public class MediaStoreHelper {
                 MediaStore.Images.Media.MIME_TYPE};
         
         // Create the cursor pointing to the Download folder
-        // In my case are: storage/sdcard0/pictures/download, storage/sdcard0/Download/
+        // In my case are: storage/sdcard0/pictures
         String selection = MediaStore.Images.ImageColumns.DATA + " like ? ";
         String selectionArgs[] = new String[] { "%/Pictures/%" };
         

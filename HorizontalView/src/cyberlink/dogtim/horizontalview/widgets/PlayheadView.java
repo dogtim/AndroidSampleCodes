@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -112,62 +111,28 @@ public class PlayheadView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        /* TODO
+         * hard code to define durationMs
+         * this variable could determine how many column we would split on duratio track
+         * */
+        final long durationMs = 100000;
 
-/*        if (mProject == null) {
-            return;
-        }*/
-
-        final long durationMs = 130000;//mProject.computeDuration();
-        final long durationSec = durationMs / 1000;
         final int y = (int) -mTextPaint.getFontMetrics().top;
-        // We only draw the origin when there is nothing on the timeline.
-        if (durationMs == 0 || durationSec == 0) {
-            final String timeText = StringUtils.getSimpleTimestampAsString(getContext(), 0);
-            int x = (int) ((getWidth() - mTextPaint.measureText(timeText)) / 2);
-            canvas.drawText(timeText, x, y, mTextPaint);
-            return;
-        }
 
-        //final int width = getWidth() - mScreenWidth;
-        final int width = 1880 - mScreenWidth;
-        // Compute the number of pixels per second
-        final int pixelsPerSec = (int) (width / durationSec);
+        final int width = getWidth() - mScreenWidth;
 
-        // Compute the distance between ticks
-        final long tickMs;
-        if (pixelsPerSec < 4) {
-            tickMs = 240000;
-        } else if (pixelsPerSec < 6) {
-            tickMs = 120000;
-        } else if (pixelsPerSec < 10) {
-            tickMs = 60000;
-        } else if (pixelsPerSec < 50) {
-            tickMs = 10000;
-        } else if (pixelsPerSec < 200) {
-            tickMs = 5000;
-        } else {
-            tickMs = 1000;
-        }
+        final long tickMs = 10000;
 
         final float spacing = ((float) (width * tickMs) / (float) durationMs);
-        final float startX = Math.max(mScrollX - (((mScrollX - (mScreenWidth / 2)) % spacing)),
-                mScreenWidth / 2);
-        float startMs = ((tickMs * (startX - (mScreenWidth / 2))) / spacing);
-        startMs = Math.round(startMs);
-        startMs -= (startMs % tickMs);
+        final float startX = 50;
+        float startMs = 0;
         
         final Context context = getContext();
         final float endX = mScrollX + mScreenWidth;
-        Log.d(TAG,"onDraw startX: "+startX);
-        Log.d(TAG,"onDraw endX: "+endX);
-        Log.d(TAG,"onDraw startMs: "+startMs);
-        Log.d(TAG,"onDraw tickMs: "+tickMs);
-        Log.d(TAG,"onDraw spacing: "+spacing);
+
         for (float i = startX; i <= endX; i += spacing, startMs += tickMs) {
             final String timeText = StringUtils.getSimpleTimestampAsString(context, (long) startMs);
             final int x = (int) (i - mTextPaint.measureText(timeText) / 2);
-            Log.d(TAG,"onDraw X: "+x);
-            Log.d(TAG,"onDraw timeText: "+timeText);
             canvas.drawText(timeText, x, y, mTextPaint);
             canvas.drawLine(i, mTimeTextSize, i, mTimeTextSize + mTicksHeight, mLinePaint);
         }
