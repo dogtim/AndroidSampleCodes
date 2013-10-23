@@ -6,16 +6,17 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:scrollbars="none">
-    <RelativeLayout
+    <cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/timeline">
         <cyberlink.dogtim.horizontalview.widgets.PlayheadView
             android:id="@+id/timeline_playhead"
-            android:layout_width="2280dp"
+            android:layout_width="match_parent"
             android:layout_height="30dp"/>
         <LinearLayout
             android:id="@+id/sperate_line"
-            android:layout_width="2280dp"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/playhead_layout_height"
             android:background="@drawable/timeline_background_line"
             android:layout_below="@id/timeline_playhead"
@@ -26,6 +27,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/sperate_line"
             android:orientation="horizontal"/>
-    </RelativeLayout>
+    </cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout>
     
 </cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView>
