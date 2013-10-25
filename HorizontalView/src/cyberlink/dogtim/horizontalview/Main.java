@@ -1,6 +1,9 @@
 package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
+
+import cyberlink.dogtim.horizontalview.widgets.ScrollViewListener;
+import cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView;
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
 
 import android.os.Bundle;
@@ -27,6 +30,8 @@ public class Main extends Activity {
     private LinearLayout mMaterialLayout;
     private LinearLayout mPhotoTrackLayout;
     private TimelineRelativeLayout mTimelineLayout;
+    private TimelineHorizontalScrollView mTHSView;
+
     private View mFakeView = null;
     private boolean mIsFakingMode = false;
     private int mFakeX = -1;
@@ -128,9 +133,9 @@ public class Main extends Activity {
         mMaterialLayout = (LinearLayout) findViewById(R.id.imageLayout);
         mPhotoTrackLayout = (LinearLayout) findViewById(R.id.photo_track);
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
+        mTHSView = (TimelineHorizontalScrollView)findViewById(R.id.timeline_scroller);
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
         getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItme));
-
         initAnimation();
         prepareMaterial();
         measureTimeLineWidth();
@@ -157,11 +162,15 @@ public class Main extends Activity {
     }
     
     private void prepareMaterial(){
-        MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext()); 
+        MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext());
         ArrayList<String> Files_string = mediaStoreHelper.getImages();
+        
         for (String file : Files_string) {
+            Log.v(TAG,"dogtim file path 0 "+ file);
             mMaterialLayout.addView(insertPhotoToMaterial(file));
+            Log.v(TAG,"dogtim file path 1 "+ file);
             mPhotoTrackLayout.addView(insertPhotoToTimeLine(file));
+            Log.v(TAG,"dogtim file path 2 "+ file);
         }
     }
     /**

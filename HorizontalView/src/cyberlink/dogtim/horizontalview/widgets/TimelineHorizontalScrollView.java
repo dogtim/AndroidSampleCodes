@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -32,6 +33,7 @@ import android.view.Display;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 
 /**
  * The timeline scroll view
@@ -50,6 +52,8 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     private boolean mAppScroll;
     private boolean mEnableUserScrolling;
 
+    private Drawable mTimeLineIndicator;
+    private ImageView indicator;
     // The runnable which executes when the scrolling ends
     private Runnable mScrollEndedRunnable = new Runnable() {
         @Override
@@ -65,23 +69,28 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
          * Add isInEditMode to make "Graphic Layout" could preview this view correctly
          * */
         if(!isInEditMode()){
-            Log.v(TAG, "not edit mode");
+            Log.v(TAG, "Not in editing mode");
 
-        mEnableUserScrolling = true;
-        mScrollListenerList = new ArrayList<ScrollViewListener>();
-        mHandler = new Handler();
+            mEnableUserScrolling = true;
+            mScrollListenerList = new ArrayList<ScrollViewListener>();
+            mHandler = new Handler();
 
-        // Compute half the width of the screen (and therefore the parent view)
-        final Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
-        mHalfParentWidth = display.getWidth() / 2;
+            // Compute half the width of the screen (and therefore the parent
+            // view)
+            final Display display = ((Activity) context).getWindowManager()
+                    .getDefaultDisplay();
+            mHalfParentWidth = display.getWidth() / 2;
 
-        // This value is shared by all children. It represents the width of
-        // the left empty view.
-        setTag(R.id.left_view_width, mHalfParentWidth);
-        setTag(R.id.playhead_offset, -1);
-        setTag(R.id.playhead_type, PLAYHEAD_NORMAL);
+            // This value is shared by all children. It represents the width of
+            // the left empty view.
+            setTag(R.id.left_view_width, mHalfParentWidth);
+            setTag(R.id.playhead_offset, -1);
+            setTag(R.id.playhead_type, PLAYHEAD_NORMAL);
 
-        final Resources resources = context.getResources();
+            final Resources resources = context.getResources();
+            
+            // Prepare the playhead drawable
+            mTimeLineIndicator = resources.getDrawable(R.drawable.timeline_indicator);
 
         }
     }
@@ -214,5 +223,16 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
+        drawTimeLineIndicator(canvas);
+    }
+    
+    private void drawTimeLineIndicator(Canvas canvas){
+        final int startX;
+        startX = mHalfParentWidth + getScrollX();
+/*        mTimeLineIndicator.setBounds(startX - halfPlayheadWidth, 
+                mPlayheadMarginTop,
+                startX + halfPlayheadWidth,
+                getHeight() - mPlayheadMarginBottom);
+        mTimeLineIndicator.draw(canvas);*/
     }
 }
