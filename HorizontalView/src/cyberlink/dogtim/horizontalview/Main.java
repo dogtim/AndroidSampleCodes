@@ -31,34 +31,6 @@ public class Main extends Activity {
     private boolean mIsFakingMode = false;
     private int mFakeX = -1;
     private int mFakeY = -1;
-    
-    private static enum ItemType {
-        OriginalItem("original item"),
-
-        EditingItem("editing item"),
-        
-        /**
-         * Workaround: when onDrag event occur, other event such as onTouch, onClick would be malfunction <p>
-         * as a result, we need window drag event to know what location of pointer<p>
-         */
-        WindowItme("window item"),
-        
-        FakeItem("fake item");
-        
-        private String name;
-        private ItemType(String source) {
-            this.name = source;
-        }
-        public String getName() {
-            return name;
-        }
-    };
-    
-    private class Item {
-        ItemType type;
-        String path;
-    }
-    
     private Item selectItem = null;
     
     private View.OnDragListener mDragListener = new View.OnDragListener() {
@@ -79,24 +51,19 @@ public class Main extends Activity {
                     if(target.type == ItemType.EditingItem && !mIsFakingMode){
                         int[] location = new int[2];
                         v.getLocationInWindow(location);
-                        Log.d(TAG, "position fakeview X: " + location[0] + ", Y: " + location[1]);
                         mFakeX = location[0];
                         mFakeY = location[1];
                         int id = mPhotoTrackLayout.indexOfChild(v);
                         mFakeView = insertPhotoToTimeLine(item.path);
                         mFakeView.setAlpha((float)0.3);
-                        Item fakeItem = new Item();
-                        fakeItem.path = "haha";
-                        fakeItem.type = ItemType.FakeItem;
-                        mFakeView.setTag(fakeItem);
+                        mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
                         mPhotoTrackLayout.addView(mFakeView,id);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
-                        Log.d(TAG,"onDrag ACTION_DRAG_ENTERED: " + target.path);
                         mIsFakingMode = true;
                         return false;
                     }
-                    
+                    Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     if(mIsFakingMode && target.type == ItemType.WindowItme){
@@ -110,10 +77,7 @@ public class Main extends Activity {
                         mPhotoTrackLayout.removeView(mFakeView);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
-                        mIsFakingMode = false;
-                        mFakeView=null;
-                        mFakeX = 0;
-                        mFakeY = 0;
+                        resetFake();
                     }
                     Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                     break;
@@ -122,10 +86,7 @@ public class Main extends Activity {
                         mFakeView.setAlpha((float)1);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
-                        mIsFakingMode = false;
-                        mFakeView=null;
-                        mFakeX = 0;
-                        mFakeY = 0;
+                        resetFake();
                     }
                     Log.d(TAG,"onDrag ACTION_DROP");
                     break;
@@ -142,6 +103,13 @@ public class Main extends Activity {
             return true;
         }
     };
+    
+    private void resetFake(){
+        mIsFakingMode = false;
+        mFakeView=null;
+        mFakeX = 0;
+        mFakeY = 0;
+    }
     
     private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
         public boolean onLongClick(View v) {
@@ -161,12 +129,8 @@ public class Main extends Activity {
         mPhotoTrackLayout = (LinearLayout) findViewById(R.id.photo_track);
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
-        Item item = new Item();
-        item.type = ItemType.WindowItme;
-        item.path = "scroller";
-        getWindow().getDecorView().getRootView().setTag(item);
-        //mPhotoTrackLayout.setClipChildren(false);
-        //mTimelineLayout.setClipChildren(false);
+        getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItme));
+
         initAnimation();
         prepareMaterial();
         measureTimeLineWidth();
@@ -243,10 +207,7 @@ public class Main extends Activity {
          * maybe we could store object in setTag to split different object
          * for variety of scenario using.
          * */
-        Item item = new Item();
-        item.type = ItemType.OriginalItem;
-        item.path = path;
-        imageView.setTag(item);
+        imageView.setTag(new Item(path, ItemType.OriginalItem));
         layout.addView(imageView);
         return layout;
     }
@@ -257,10 +218,7 @@ public class Main extends Activity {
          * maybe we could store object in setTag to split different object
          * for variety of scenario using.
          * */
-        Item item = new Item();
-        item.type = ItemType.EditingItem;
-        item.path = path;
-        imageView.setTag(item);
+        imageView.setTag(new Item(path,ItemType.EditingItem));
         return imageView;
     }
 }
