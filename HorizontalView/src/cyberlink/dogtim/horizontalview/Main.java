@@ -1,7 +1,6 @@
 package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
-
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
 
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import android.view.DragEvent;
@@ -19,8 +17,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -31,11 +27,23 @@ public class Main extends Activity {
     private LinearLayout mMaterialLayout;
     private LinearLayout mPhotoTrackLayout;
     private TimelineRelativeLayout mTimelineLayout;
+    private View mFakeView = null;
+    private boolean mIsFakingMode = false;
+    private int mFakeX = -1;
+    private int mFakeY = -1;
     
     private static enum ItemType {
         OriginalItem("original item"),
 
-        EditingItem("editing item");
+        EditingItem("editing item"),
+        
+        /**
+         * Workaround: when onDrag event occur, other event such as onTouch, onClick would be malfunction <p>
+         * as a result, we need window drag event to know what location of pointer<p>
+         */
+        WindowItme("window item"),
+        
+        FakeItem("fake item");
         
         private String name;
         private ItemType(String source) {
@@ -57,8 +65,8 @@ public class Main extends Activity {
         public boolean onDrag(View v, DragEvent event) {
             final int action = event.getAction();
             Item item = selectItem;
-            Log.d(TAG,"onDrag item: "+item.type.getName());
             Item target = (Item) v.getTag();
+
             if (target == null)
                 return true;
             switch (action) {
@@ -68,27 +76,56 @@ public class Main extends Activity {
                 
                 case DragEvent.ACTION_DRAG_ENTERED:
                     
-                    if(target.type == ItemType.EditingItem){
-
-                        /*Animation am = new TranslateAnimation( 0, 100, 0, 0);
-                        am.setDuration(2500);
-                        mTimelineLayout.setAnimation(am);
-                        am.startNow();*/
-                        /*v.setPadding(200, 0, 0, 0);
-                        mTimelineLayout.invalidate();*/
-                        //v.setVisibility(View.INVISIBLE);
+                    if(target.type == ItemType.EditingItem && !mIsFakingMode){
+                        int[] location = new int[2];
+                        v.getLocationInWindow(location);
+                        Log.d(TAG, "position fakeview X: " + location[0] + ", Y: " + location[1]);
+                        mFakeX = location[0];
+                        mFakeY = location[1];
+                        int id = mPhotoTrackLayout.indexOfChild(v);
+                        mFakeView = insertPhotoToTimeLine(item.path);
+                        mFakeView.setAlpha((float)0.3);
+                        Item fakeItem = new Item();
+                        fakeItem.path = "haha";
+                        fakeItem.type = ItemType.FakeItem;
+                        mFakeView.setTag(fakeItem);
+                        mPhotoTrackLayout.addView(mFakeView,id);
+                        measureTimeLineWidth();
+                        mTimelineLayout.invalidate();
+                        Log.d(TAG,"onDrag ACTION_DRAG_ENTERED: " + target.path);
+                        mIsFakingMode = true;
+                        return false;
                     }
-                    Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
+                    
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
+                    if(mIsFakingMode && target.type == ItemType.WindowItme){
+                        int eventX = (int )event.getX();
+                        int eventY = (int )event.getY();
+                        if(mFakeX < eventX && (mFakeX+mFakeView.getWidth()) > eventX){
+                            if(mFakeY < eventY && (mFakeY+mFakeView.getHeight()) > eventY){
+                                return true;
+                            }
+                        }
+                        mPhotoTrackLayout.removeView(mFakeView);
+                        measureTimeLineWidth();
+                        mTimelineLayout.invalidate();
+                        mIsFakingMode = false;
+                        mFakeView=null;
+                        mFakeX = 0;
+                        mFakeY = 0;
+                    }
                     Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                     break;
                 case DragEvent.ACTION_DROP:
-                    if(target.type == ItemType.EditingItem){
-                        int id = mPhotoTrackLayout.indexOfChild(v);
-                        mPhotoTrackLayout.addView(insertPhotoToTimeLine(item.path),id);
+                    if(target.type == ItemType.WindowItme && mIsFakingMode){
+                        mFakeView.setAlpha((float)1);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
+                        mIsFakingMode = false;
+                        mFakeView=null;
+                        mFakeX = 0;
+                        mFakeY = 0;
                     }
                     Log.d(TAG,"onDrag ACTION_DROP");
                     break;
@@ -97,6 +134,9 @@ public class Main extends Activity {
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     Log.d(TAG,"onDrag ACTION_DRAG_ENDED");
+                    break;
+                default:
+                    Log.d(TAG,"onDrag default");
                     break;
             }
             return true;
@@ -120,6 +160,11 @@ public class Main extends Activity {
         mMaterialLayout = (LinearLayout) findViewById(R.id.imageLayout);
         mPhotoTrackLayout = (LinearLayout) findViewById(R.id.photo_track);
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
+        getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
+        Item item = new Item();
+        item.type = ItemType.WindowItme;
+        item.path = "scroller";
+        getWindow().getDecorView().getRootView().setTag(item);
         //mPhotoTrackLayout.setClipChildren(false);
         //mTimelineLayout.setClipChildren(false);
         initAnimation();
@@ -127,6 +172,10 @@ public class Main extends Activity {
         measureTimeLineWidth();
     }
     
+    /**
+     * Animation codes from Api Demos project <p>
+     * com.example.android.apis.animation.LayoutAnimations.java
+     */
     private void initAnimation(){
         final LayoutTransition transitioner = new LayoutTransition();
         mPhotoTrackLayout.setLayoutTransition(transitioner);
@@ -213,6 +262,5 @@ public class Main extends Activity {
         item.path = path;
         imageView.setTag(item);
         return imageView;
-
     }
 }
