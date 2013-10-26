@@ -89,6 +89,8 @@ public class Main extends Activity {
                 case DragEvent.ACTION_DROP:
                     if(target.type == ItemType.WindowItme && mIsFakingMode){
                         mFakeView.setAlpha((float)1);
+                        Item itemTag = (Item) mFakeView.getTag();
+                        itemTag.type = ItemType.EditingItem;
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
                         resetFake();
