@@ -71,6 +71,7 @@ public class Main extends Activity {
                         mFakeView.setAlpha((float)0.3);
                         mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
                         mPhotoTrackLayout.addView(mFakeView,id);
+                        mProject.addEditingItem(id, item);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
                         mIsFakingMode = true;
@@ -87,6 +88,7 @@ public class Main extends Activity {
                                 return true;
                             }
                         }
+                        mProject.removeEditingItem(mPhotoTrackLayout.indexOfChild(mFakeView));
                         mPhotoTrackLayout.removeView(mFakeView);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();

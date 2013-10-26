@@ -53,6 +53,10 @@ public class Project {
         mEditingItem.put(id, item);
     }
 
+    public void removeEditingItem(int id){
+        mEditingItem.remove(id);
+    }
+    
     public int getDuration(){
         if(mEditingItem == null){ // default give 60s
             return DEFAULT_PROJECT_DURATION;

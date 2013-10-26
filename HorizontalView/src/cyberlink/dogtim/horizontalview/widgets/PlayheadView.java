@@ -112,7 +112,6 @@ public class PlayheadView extends View {
         final TimelineHorizontalScrollView scrollView =
             (TimelineHorizontalScrollView)((View)getParent()).getParent();
         scrollView.removeScrollListener(mScrollListener);
-        mScrollView.removeScrollListener(mScrollListener);
     }
 
     /**
@@ -128,7 +127,7 @@ public class PlayheadView extends View {
 
         if (!isInEditMode()) {
             if (mProject == null) {
-                Log.e(TAG,"dogtim project" );
+                Log.e(TAG,"project disappear" );
                 return;
             }
             
@@ -136,7 +135,7 @@ public class PlayheadView extends View {
 
             final int y = (int) -mTextPaint.getFontMetrics().top;
 
-            int width = getWidth()+ mScreenWidth;
+            int width = mScreenWidth*2;//getWidth()+ mScreenWidth;
 /*            if(width < 0){
                 width = mScreenWidth;
             }*/
@@ -149,14 +148,7 @@ public class PlayheadView extends View {
 
             final Context context = getContext();
             final float endX = mScrollX + mScreenWidth;
-            Log.e(TAG,"dogtim getWidth(): "+getWidth());
-            Log.e(TAG,"dogtim mScreenWidth: "+mScreenWidth);
-            Log.e(TAG,"dogtim width: "+width);
-            
-            Log.e(TAG,"dogtim startX: "+startX);
-            Log.e(TAG,"dogtim endX: "+endX);
-            Log.e(TAG,"dogtim spacing: "+spacing);
-            Log.e(TAG,"dogtim tickMs: "+tickMs);
+
             for (float i = startX; i <= endX; i += spacing, startMs += tickMs) {
                 final String timeText = StringUtils.getSimpleTimestampAsString(
                         context, (long) startMs);
