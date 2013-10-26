@@ -2,6 +2,7 @@ package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
 
+import cyberlink.dogtim.horizontalview.widgets.PlayheadView;
 import cyberlink.dogtim.horizontalview.widgets.ScrollViewListener;
 import cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView;
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
@@ -13,12 +14,16 @@ import android.animation.LayoutTransition;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,12 +36,15 @@ public class Main extends Activity {
     private LinearLayout mPhotoTrackLayout;
     private TimelineRelativeLayout mTimelineLayout;
     private TimelineHorizontalScrollView mTHSView;
-
+    private PlayheadView mPlayheadView;
+    
     private View mFakeView = null;
     private boolean mIsFakingMode = false;
     private int mFakeX = -1;
     private int mFakeY = -1;
     private Item selectItem = null;
+    
+    private Project mProject;
     
     private View.OnDragListener mDragListener = new View.OnDragListener() {
         public boolean onDrag(View v, DragEvent event) {
@@ -135,9 +143,13 @@ public class Main extends Activity {
         mMaterialLayout = (LinearLayout) findViewById(R.id.imageLayout);
         mPhotoTrackLayout = (LinearLayout) findViewById(R.id.photo_track);
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
+        mPlayheadView = (PlayheadView)findViewById(R.id.timeline_playhead );
         mTHSView = (TimelineHorizontalScrollView)findViewById(R.id.timeline_scroller);
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
         getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItme));
+        
+        mProject = Project.get();
+        mPlayheadView.setProject(mProject);
         initAnimation();
         prepareMaterial();
         measureTimeLineWidth();
@@ -151,7 +163,7 @@ public class Main extends Activity {
         final LayoutTransition transitioner = new LayoutTransition();
         mPhotoTrackLayout.setLayoutTransition(transitioner);
         Animator customAppearingAnim;
-        // Adding
+        // Adding animation
         customAppearingAnim = ObjectAnimator.ofFloat(null, "rotationY", 90f, 0f).
                 setDuration(transitioner.getDuration(LayoutTransition.APPEARING));
         customAppearingAnim.addListener(new AnimatorListenerAdapter() {
@@ -166,13 +178,10 @@ public class Main extends Activity {
     private void prepareMaterial(){
         MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext());
         ArrayList<String> Files_string = mediaStoreHelper.getImages();
-        
+        mPhotoTrackLayout.addView(insertPhotoToTimeLine(Files_string.get(0)));
         for (String file : Files_string) {
-            Log.v(TAG,"dogtim file path 0 "+ file);
             mMaterialLayout.addView(insertPhotoToMaterial(file));
-            Log.v(TAG,"dogtim file path 1 "+ file);
-            mPhotoTrackLayout.addView(insertPhotoToTimeLine(file));
-            Log.v(TAG,"dogtim file path 2 "+ file);
+            //mPhotoTrackLayout.addView(insertPhotoToTimeLine(file));
         }
     }
     /**
@@ -181,6 +190,13 @@ public class Main extends Activity {
      *   @see <a href="http://www.eoeandroid.com/thread-240677-1-1.html">getWidth() == 0</a>
      */
     private void measureTimeLineWidth(){
+        // Get the screen width
+        final Display display = ((WindowManager) this
+                .getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay();
+        final DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        final int screenWidth = metrics.widthPixels;
         
         int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);  
         int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);  
@@ -189,8 +205,12 @@ public class Main extends Activity {
         for (int i = 0; i < childrenCount; i++) {
             final View child = mTimelineLayout.getChildAt(i);
             final ViewGroup.LayoutParams lp = child.getLayoutParams();
-
-            lp.width = mPhotoTrackLayout.getMeasuredWidth();
+            child.measure(w, h);
+            lp.width = child.getMeasuredWidth();
+            if(screenWidth > lp.width)
+                lp.width = screenWidth;
+            if(mPhotoTrackLayout.getMeasuredWidth() > lp.width)
+                lp.width = mPhotoTrackLayout.getMeasuredWidth();
             child.setLayoutParams(lp);
         }
     }

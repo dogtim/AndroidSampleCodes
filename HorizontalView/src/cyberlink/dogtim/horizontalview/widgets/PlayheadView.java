@@ -1,5 +1,6 @@
 package cyberlink.dogtim.horizontalview.widgets;
 
+import cyberlink.dogtim.horizontalview.Project;
 import cyberlink.dogtim.horizontalview.R;
 import cyberlink.dogtim.horizontalview.util.StringUtils;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.ViewGroup.LayoutParams;
 
 /**
  * The view which displays the scroll position
@@ -25,10 +27,12 @@ public class PlayheadView extends View {
     // Timeline text size.
     private float mTimeTextSize;
     private int mScreenWidth;
+    private TimelineHorizontalScrollView mScrollView;
     private ScrollViewListener mScrollListener;
     private int mScrollX;
-    //private VideoEditorProject mProject;
-
+    private Project mProject;
+    private int MILISECOND_UNIT=1000;
+    
     public PlayheadView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         if (!isInEditMode()) {
@@ -108,33 +112,36 @@ public class PlayheadView extends View {
         final TimelineHorizontalScrollView scrollView =
             (TimelineHorizontalScrollView)((View)getParent()).getParent();
         scrollView.removeScrollListener(mScrollListener);
+        mScrollView.removeScrollListener(mScrollListener);
     }
 
     /**
      * @param project The project
      */
-/*    public void setProject(VideoEditorProject project) {
-        mProject = project;
-    }*/
+    public void setProject(Project p) {
+        mProject = p;
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        /* TODO
-         * hard code to define durationMs
-         * this variable could determine how many column we would split on duratio track
-         * */
+
         if (!isInEditMode()) {
-            final long durationMs = 100000;
+            if (mProject == null) {
+                Log.e(TAG,"dogtim project" );
+                return;
+            }
+            
+            final long durationMs = mProject.getDuration() * MILISECOND_UNIT;
 
             final int y = (int) -mTextPaint.getFontMetrics().top;
 
-            int width = getWidth() - mScreenWidth;
-            if(width < 0){
-                width = 100;
-            }
+            int width = getWidth()+ mScreenWidth;
+/*            if(width < 0){
+                width = mScreenWidth;
+            }*/
 
-            final long tickMs = 1000000;
+            final long tickMs = 5 * MILISECOND_UNIT;
 
             final float spacing = ((float) (width * tickMs) / (float) durationMs);
             final float startX = 50;
