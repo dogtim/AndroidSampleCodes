@@ -6,33 +6,43 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:scrollbars="none">
-    <cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout
+    
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/timeline">
-        <cyberlink.dogtim.horizontalview.widgets.PlayheadView
-            android:id="@+id/timeline_playhead"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"/>
-        <LinearLayout
-            android:id="@+id/sperate_line"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/timeline_background_line"
-            android:layout_below="@id/timeline_playhead"
-            android:orientation="horizontal"/>
-        <LinearLayout
-            android:id="@+id/photo_track"
+        android:layout_height="wrap_content" >
+
+        <cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout
+            android:id="@+id/timeline"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/sperate_line"
-            android:orientation="horizontal"/>
-<!--         <ImageView
-            android:id="@+id/timeline_indicator1"
+            android:layout_height="wrap_content" >
+
+            <cyberlink.dogtim.horizontalview.widgets.PlayheadView
+                android:id="@+id/timeline_playhead"
+                android:layout_width="match_parent"
+                android:layout_height="30dp" />
+
+            <LinearLayout
+                android:id="@+id/sperate_line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/timeline_playhead"
+                android:background="@drawable/timeline_background_line"
+                android:orientation="horizontal" />
+
+            <LinearLayout
+                android:id="@+id/photo_track"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sperate_line"
+                android:orientation="horizontal" />
+        </cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout>
+
+        <ImageView
+            android:id="@+id/timeline_indicator"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:contentDescription="@string/desc"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/timeline_indicator" /> -->
-    </cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout>
+            android:src="@drawable/timeline_indicator" />
+    </RelativeLayout>
+
 </cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView>

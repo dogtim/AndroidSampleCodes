@@ -101,7 +101,7 @@ public class PlayheadView extends View {
     protected void onAttachedToWindow() {
         if (!isInEditMode()) {
             final TimelineHorizontalScrollView scrollView = (TimelineHorizontalScrollView) ((View) getParent())
-                    .getParent();
+                    .getParent().getParent();
             mScrollX = scrollView.getScrollX();
             scrollView.addScrollListener(mScrollListener);
         }
@@ -110,7 +110,7 @@ public class PlayheadView extends View {
     @Override
     protected void onDetachedFromWindow() {
         final TimelineHorizontalScrollView scrollView =
-            (TimelineHorizontalScrollView)((View)getParent()).getParent();
+            (TimelineHorizontalScrollView)((View)getParent()).getParent().getParent();
         scrollView.removeScrollListener(mScrollListener);
     }
 
