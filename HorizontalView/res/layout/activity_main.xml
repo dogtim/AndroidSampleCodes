@@ -1,26 +1,25 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@android:color/black"
     android:orientation="vertical"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Main" >
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_alignParentTop="true">
+        android:layout_weight="0.5">
         <include layout="@layout/media_selector" />
     </LinearLayout>
     
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="0.5">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -47,6 +46,17 @@
                         android:contentDescription="@string/desc"
                         android:src="@drawable/track_icon_audio" />
             </LinearLayout>
-            <include layout="@layout/timeline" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" >
+                <include layout="@layout/timeline" />
+                <ImageView
+                    android:id="@+id/timeline_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/desc"
+                    android:src="@drawable/timeline_indicator" />
+            </RelativeLayout>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

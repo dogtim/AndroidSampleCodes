@@ -6,10 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:scrollbars="none">
-    
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
+
 
         <cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout
             android:id="@+id/timeline"
@@ -37,12 +34,5 @@
                 android:orientation="horizontal" />
         </cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout>
 
-        <ImageView
-            android:id="@+id/timeline_indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/desc"
-            android:src="@drawable/timeline_indicator" />
-    </RelativeLayout>
 
 </cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView>

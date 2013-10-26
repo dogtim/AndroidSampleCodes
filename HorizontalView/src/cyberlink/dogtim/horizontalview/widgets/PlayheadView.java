@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.ViewGroup.LayoutParams;
 
 /**
  * The view which displays the scroll position
@@ -27,7 +26,7 @@ public class PlayheadView extends View {
     // Timeline text size.
     private float mTimeTextSize;
     private int mScreenWidth;
-    private TimelineHorizontalScrollView mScrollView;
+
     private ScrollViewListener mScrollListener;
     private int mScrollX;
     private Project mProject;
@@ -101,7 +100,7 @@ public class PlayheadView extends View {
     protected void onAttachedToWindow() {
         if (!isInEditMode()) {
             final TimelineHorizontalScrollView scrollView = (TimelineHorizontalScrollView) ((View) getParent())
-                    .getParent().getParent();
+                    .getParent();
             mScrollX = scrollView.getScrollX();
             scrollView.addScrollListener(mScrollListener);
         }
@@ -110,7 +109,7 @@ public class PlayheadView extends View {
     @Override
     protected void onDetachedFromWindow() {
         final TimelineHorizontalScrollView scrollView =
-            (TimelineHorizontalScrollView)((View)getParent()).getParent().getParent();
+            (TimelineHorizontalScrollView)((View)getParent()).getParent();
         scrollView.removeScrollListener(mScrollListener);
     }
 
@@ -143,7 +142,7 @@ public class PlayheadView extends View {
             final long tickMs = 5 * MILISECOND_UNIT;
 
             final float spacing = ((float) (width * tickMs) / (float) durationMs);
-            final float startX = 50;
+            final float startX = 100;
             float startMs = 0;
 
             final Context context = getContext();
