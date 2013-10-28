@@ -3,7 +3,6 @@ package cyberlink.dogtim.horizontalview;
 import java.util.ArrayList;
 
 import cyberlink.dogtim.horizontalview.widgets.PlayheadView;
-import cyberlink.dogtim.horizontalview.widgets.ScrollViewListener;
 import cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView;
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
 
@@ -150,13 +149,43 @@ public class Main extends Activity {
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
         getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItme));
         
+        setMaterialButton();
         mProject = Project.get();
         mPlayheadView.setProject(mProject);
         initAnimation();
-        prepareMaterial();
+        setTimeLineEditingItem();
+        setPhotoMaterial();
         measureTimeLineWidth();
     }
     
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            int viewID = v.getId();
+            switch (viewID) {
+            case R.id.photo_material_icon:
+                Log.e(TAG, "photo_material_icon");
+                mMaterialLayout.removeAllViews();
+                setPhotoMaterial();
+                break;
+            case R.id.transition_material_icon:
+                Log.e(TAG, "transition_material_icon");
+                mMaterialLayout.removeAllViews();
+                setTransitionMaterial();
+                break;
+            default:
+                break;
+            }
+        }
+    };
+    
+    private void setMaterialButton(){
+        ImageView photoBtn = (ImageView) findViewById(R.id.photo_material_icon);
+        ImageView transitionBtn = (ImageView) findViewById(R.id.transition_material_icon);
+        photoBtn.setOnClickListener(mOnClickListener);
+        transitionBtn.setOnClickListener(mOnClickListener);
+        
+    }
     /**
      * Animation codes from Api Demos project <p>
      * com.example.android.apis.animation.LayoutAnimations.java
@@ -177,15 +206,31 @@ public class Main extends Activity {
         transitioner.setAnimator(LayoutTransition.APPEARING, customAppearingAnim);
     }
     
-    private void prepareMaterial(){
+    private void setTimeLineEditingItem(){
         MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext());
         ArrayList<String> Files_string = mediaStoreHelper.getImages();
         mPhotoTrackLayout.addView(insertPhotoToTimeLine(Files_string.get(0)));
+    }
+    
+    private void setPhotoMaterial(){
+        MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext());
+        ArrayList<String> Files_string = mediaStoreHelper.getImages();
         for (String file : Files_string) {
             mMaterialLayout.addView(insertPhotoToMaterial(file));
             //mPhotoTrackLayout.addView(insertPhotoToTimeLine(file));
         }
     }
+
+    private void setTransitionMaterial(){
+        int files[] = TransitionMaterial.items;
+
+        for(int i=0; i<files.length ; i++){
+            ImageView image = new ImageView(this);
+            image.setImageResource(files[i]);
+            mMaterialLayout.addView(image);
+        }
+    }
+    
     /**
      *   This is a workaround to get measure spec because <p>
      *   we can not get correct value in onCreate function. <p>
@@ -218,7 +263,6 @@ public class Main extends Activity {
     }
     
     private ImageView createImageView(String path){
-        
         Bitmap bm = BitmapHelper.decodeSampledBitmapFromUri(path, 40, 40);
         ImageView imageView = new ImageView(getApplicationContext());
         imageView.setLayoutParams(new LayoutParams(220, 220));
