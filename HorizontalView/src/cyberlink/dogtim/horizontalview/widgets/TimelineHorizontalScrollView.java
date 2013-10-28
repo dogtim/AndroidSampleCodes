@@ -52,7 +52,6 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     private boolean mAppScroll;
     private boolean mEnableUserScrolling;
 
-    private Drawable mTimeLineIndicator;
     private ImageView indicator;
     // The runnable which executes when the scrolling ends
     private Runnable mScrollEndedRunnable = new Runnable() {
@@ -89,9 +88,6 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
 
             final Resources resources = context.getResources();
             
-            // Prepare the playhead drawable
-            mTimeLineIndicator = resources.getDrawable(R.drawable.timeline_indicator);
-
         }
     }
 
@@ -229,10 +225,5 @@ public class TimelineHorizontalScrollView extends HorizontalScrollView {
     private void drawTimeLineIndicator(Canvas canvas){
         final int startX;
         startX = mHalfParentWidth + getScrollX();
-/*        mTimeLineIndicator.setBounds(startX - halfPlayheadWidth, 
-                mPlayheadMarginTop,
-                startX + halfPlayheadWidth,
-                getHeight() - mPlayheadMarginBottom);
-        mTimeLineIndicator.draw(canvas);*/
     }
 }
