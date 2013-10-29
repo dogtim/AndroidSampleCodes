@@ -2,6 +2,7 @@ package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
 
+import cyberlink.dogtim.horizontalview.util.MaterialShadowBuilder;
 import cyberlink.dogtim.horizontalview.widgets.PlayheadView;
 import cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView;
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
@@ -47,10 +48,10 @@ public class Main extends Activity {
         public boolean onDrag(View v, DragEvent event) {
             final int action = event.getAction();
             View draggedView = (View) event.getLocalState();
-            Item item = (Item) draggedView.getTag();
-            Item target = (Item) v.getTag();
+            Item draggedItem = (Item) draggedView.getTag();
+            Item targetItem = (Item) v.getTag();
 
-            if (target == null)
+            if (targetItem == null)
                 return true;
             switch (action) {
                 case DragEvent.ACTION_DRAG_STARTED:
@@ -59,17 +60,17 @@ public class Main extends Activity {
                 
                 case DragEvent.ACTION_DRAG_ENTERED:
                     
-                    if(target.type == ItemType.EditingItem && !mIsFakingMode){
+                    if(draggedItem.type == ItemType.OriginalItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
                         int[] location = new int[2];
                         v.getLocationInWindow(location);
                         mFakeX = location[0];
                         mFakeY = location[1];
                         int id = mPhotoTrackLayout.indexOfChild(v);
-                        mFakeView = createPhotoEditingView(item.path);
+                        mFakeView = createPhotoEditingView(draggedItem.path);
                         mFakeView.setAlpha((float)0.3);
                         mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
                         mPhotoTrackLayout.addView(mFakeView,id);
-                        mProject.addEditingItem(id, item);
+                        mProject.addEditingItem(id, draggedItem);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
                         mIsFakingMode = true;
@@ -78,7 +79,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    if(mIsFakingMode && target.type == ItemType.WindowItem){
+                    if(mIsFakingMode && targetItem.type == ItemType.WindowItem){
                         int eventX = (int )event.getX();
                         int eventY = (int )event.getY();
                         if(mFakeX < eventX && (mFakeX+mFakeView.getWidth()) > eventX){
@@ -95,7 +96,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                     break;
                 case DragEvent.ACTION_DROP:
-                    if(target.type == ItemType.WindowItem && mIsFakingMode){
+                    if(targetItem.type == ItemType.WindowItem && mIsFakingMode){
                         mFakeView.setAlpha((float)1);
                         Item itemTag = (Item) mFakeView.getTag();
                         itemTag.type = ItemType.EditingItem;
@@ -130,6 +131,7 @@ public class Main extends Activity {
         public boolean onLongClick(View v) {
             ClipData data = null;//ClipData.newPlainText("dot", "Dot : " + v.toString());
             View.DragShadowBuilder shadowView = new View.DragShadowBuilder (v);
+            //MaterialShadowBuilder shadowView = new MaterialShadowBuilder(v);
             v.startDrag(data, shadowView,(Object)v, 0);
             return true;
         }
