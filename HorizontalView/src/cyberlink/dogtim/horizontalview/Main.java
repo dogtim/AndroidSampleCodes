@@ -41,14 +41,13 @@ public class Main extends Activity {
     private boolean mIsFakingMode = false;
     private int mFakeX = -1;
     private int mFakeY = -1;
-    private Item selectItem = null;
-    
     private Project mProject;
     
     private View.OnDragListener mDragListener = new View.OnDragListener() {
         public boolean onDrag(View v, DragEvent event) {
             final int action = event.getAction();
-            Item item = selectItem;
+            View draggedView = (View) event.getLocalState();
+            Item item = (Item) draggedView.getTag();
             Item target = (Item) v.getTag();
 
             if (target == null)
@@ -66,7 +65,7 @@ public class Main extends Activity {
                         mFakeX = location[0];
                         mFakeY = location[1];
                         int id = mPhotoTrackLayout.indexOfChild(v);
-                        mFakeView = insertPhotoToTimeLine(item.path);
+                        mFakeView = createPhotoEditingView(item.path);
                         mFakeView.setAlpha((float)0.3);
                         mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
                         mPhotoTrackLayout.addView(mFakeView,id);
@@ -79,7 +78,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    if(mIsFakingMode && target.type == ItemType.WindowItme){
+                    if(mIsFakingMode && target.type == ItemType.WindowItem){
                         int eventX = (int )event.getX();
                         int eventY = (int )event.getY();
                         if(mFakeX < eventX && (mFakeX+mFakeView.getWidth()) > eventX){
@@ -96,7 +95,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                     break;
                 case DragEvent.ACTION_DROP:
-                    if(target.type == ItemType.WindowItme && mIsFakingMode){
+                    if(target.type == ItemType.WindowItem && mIsFakingMode){
                         mFakeView.setAlpha((float)1);
                         Item itemTag = (Item) mFakeView.getTag();
                         itemTag.type = ItemType.EditingItem;
@@ -131,7 +130,6 @@ public class Main extends Activity {
         public boolean onLongClick(View v) {
             ClipData data = null;//ClipData.newPlainText("dot", "Dot : " + v.toString());
             View.DragShadowBuilder shadowView = new View.DragShadowBuilder (v);
-            selectItem = (Item) v.getTag();
             v.startDrag(data, shadowView,(Object)v, 0);
             return true;
         }
@@ -147,7 +145,7 @@ public class Main extends Activity {
         mPlayheadView = (PlayheadView)findViewById(R.id.timeline_playhead );
         mTHSView = (TimelineHorizontalScrollView)findViewById(R.id.timeline_scroller);
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
-        getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItme));
+        getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItem));
         
         setMaterialButton();
         mProject = Project.get();
@@ -209,14 +207,14 @@ public class Main extends Activity {
     private void setTimeLineEditingItem(){
         MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext());
         ArrayList<String> Files_string = mediaStoreHelper.getImages();
-        mPhotoTrackLayout.addView(insertPhotoToTimeLine(Files_string.get(0)));
+        mPhotoTrackLayout.addView(createPhotoEditingView(Files_string.get(0)));
     }
     
     private void setPhotoMaterial(){
         MediaStoreHelper mediaStoreHelper = new MediaStoreHelper(getApplicationContext());
         ArrayList<String> Files_string = mediaStoreHelper.getImages();
         for (String file : Files_string) {
-            mMaterialLayout.addView(insertPhotoToMaterial(file));
+            mMaterialLayout.addView(createPhotoMaterialView(file));
             //mPhotoTrackLayout.addView(insertPhotoToTimeLine(file));
         }
     }
@@ -225,9 +223,7 @@ public class Main extends Activity {
         int files[] = TransitionMaterial.items;
 
         for(int i=0; i<files.length ; i++){
-            ImageView image = new ImageView(this);
-            image.setImageResource(files[i]);
-            mMaterialLayout.addView(image);
+            mMaterialLayout.addView(createTransitionMaterialView(files[i]));
         }
     }
     
@@ -269,33 +265,38 @@ public class Main extends Activity {
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setImageBitmap(bm);
         
-        imageView.setOnDragListener(mDragListener);
-        imageView.setLongClickable(true);
-        imageView.setOnLongClickListener(mLongClickListener);
+        setImageViewEvent(imageView);
         return imageView;
     }
     
-    private View insertPhotoToMaterial(String path) {
+    private void setImageViewEvent(ImageView imageView){
+        imageView.setOnDragListener(mDragListener);
+        imageView.setLongClickable(true);
+        imageView.setOnLongClickListener(mLongClickListener);
+    }
+    
+    private View createPhotoMaterialView(String path) {
         LinearLayout layout = new LinearLayout(getApplicationContext());
         layout.setLayoutParams(new LayoutParams(250, 250));
         layout.setGravity(Gravity.CENTER);
         ImageView imageView = createImageView(path);
-        /* TODO 
-         * maybe we could store object in setTag to split different object
-         * for variety of scenario using.
-         * */
         imageView.setTag(new Item(path, ItemType.OriginalItem));
         layout.addView(imageView);
         return layout;
     }
 
-    private View insertPhotoToTimeLine(String path) {
+    private View createTransitionMaterialView(int resourceId) {
+        ImageView imageView = new ImageView(this);
+        imageView.setImageResource(resourceId);
+        imageView.setTag(new Item( Integer.toString(resourceId),ItemType.TransitionItem));
+        setImageViewEvent(imageView);
+        return imageView;
+    }
+
+    private View createPhotoEditingView(String path) {
         ImageView imageView = createImageView(path);
-        /* TODO 
-         * maybe we could store object in setTag to split different object
-         * for variety of scenario using.
-         * */
         imageView.setTag(new Item(path,ItemType.EditingItem));
         return imageView;
     }
+
 }

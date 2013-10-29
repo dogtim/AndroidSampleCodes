@@ -9,8 +9,10 @@ public enum ItemType {
      * Workaround: when onDrag event occur, other event such as onTouch, onClick would be malfunction <p>
      * as a result, we need window drag event to know what location of pointer<p>
      */
-    WindowItme("window item"),
-    
+    WindowItem("window item"),
+
+    TransitionItem("Transition item"),
+
     FakeItem("fake item");
     
     private String name;
