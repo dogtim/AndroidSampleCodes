@@ -25,13 +25,23 @@
                 android:layout_below="@id/timeline_playhead"
                 android:background="@drawable/timeline_background_line"
                 android:orientation="horizontal" />
-
-            <LinearLayout
-                android:id="@+id/photo_track"
+            <FrameLayout
+                android:id="@+id/decorate_vp_track"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/sperate_line"
-                android:orientation="horizontal" />
+                android:layout_below="@id/sperate_line">
+                <LinearLayout
+                    android:id="@+id/photo_track"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+                <ImageView                        
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/desc"
+                    android:src="@drawable/_001">
+                </ImageView>
+            </FrameLayout>
         </cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout>
 
 

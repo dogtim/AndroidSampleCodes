@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -34,6 +35,7 @@ public class Main extends Activity {
 
     private LinearLayout mMaterialLayout;
     private LinearLayout mPhotoTrackLayout;
+    private FrameLayout mDecorateTrackLayout;
     private TimelineRelativeLayout mTimelineLayout;
     private TimelineHorizontalScrollView mTHSView;
     private PlayheadView mPlayheadView;
@@ -71,6 +73,28 @@ public class Main extends Activity {
                         mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
                         mPhotoTrackLayout.addView(mFakeView,id);
                         mProject.addEditingItem(id, draggedItem);
+                        measureTimeLineWidth();
+                        mTimelineLayout.invalidate();
+                        mIsFakingMode = true;
+                        return false;
+                    }else if(draggedItem.type == ItemType.TransitionItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
+                        int[] location = new int[2];
+                        v.getLocationInWindow(location);
+                        mFakeX = location[0];
+                        mFakeY = location[1];
+                        mFakeView = createTransitionEditingView(draggedItem.path);
+                        //mFakeView.setAlpha((float)0.3);
+                        mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
+                        mFakeView.setX((float)(v.getX()+(float)v.getWidth()) - (float)(draggedView.getWidth()/2));
+                        mFakeView.setY((float)(v.getY()+(float)(v.getHeight()/2)) - (float)(draggedView.getHeight()/2));
+                        mFakeView.setLayoutParams(new FrameLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        ));
+                        Log.d(TAG,"dogtim mFakeX: "+mFakeX+",mFakeY: "+mFakeY);
+                        Log.d(TAG,"dogtim v.getX(): "+v.getX()+",v.getY(): "+v.getY());
+                        Log.d(TAG,"dogtim mFakeView.getWidth(): "+mFakeView.getWidth()+",mFakeView.getHeight(): "+mFakeView.getHeight());
+                        mDecorateTrackLayout.addView(mFakeView);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
                         mIsFakingMode = true;
@@ -143,6 +167,7 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
         mMaterialLayout = (LinearLayout) findViewById(R.id.imageLayout);
         mPhotoTrackLayout = (LinearLayout) findViewById(R.id.photo_track);
+        mDecorateTrackLayout = (FrameLayout) findViewById(R.id.decorate_vp_track);
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
         mPlayheadView = (PlayheadView)findViewById(R.id.timeline_playhead );
         mTHSView = (TimelineHorizontalScrollView)findViewById(R.id.timeline_scroller);
@@ -301,4 +326,10 @@ public class Main extends Activity {
         return imageView;
     }
 
+    private View createTransitionEditingView(String resourceId) {
+        ImageView imageView = new ImageView(this);
+        imageView.setImageResource(Integer.parseInt(resourceId));
+        imageView.setTag(new Item(resourceId,ItemType.EditingItem));
+        return imageView;
+    }
 }

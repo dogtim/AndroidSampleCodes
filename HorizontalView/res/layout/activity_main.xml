@@ -8,10 +8,9 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_weight="0.5"
         android:orientation="vertical">
         <include layout="@layout/tab_material"/>
         <include layout="@layout/media_selector" />
@@ -19,9 +18,9 @@
     
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="0.5">
+        android:layout_gravity="bottom">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -51,12 +50,13 @@
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" >
+                android:layout_height="wrap_content" >
                 <include layout="@layout/timeline" />
                 <ImageView
                     android:id="@+id/timeline_indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:scaleType="fitXY"
                     android:contentDescription="@string/desc"
                     android:src="@drawable/timeline_indicator" />
             </RelativeLayout>
