@@ -2,6 +2,7 @@ package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
 
+import cyberlink.dogtim.horizontalview.listener.EditingItemOnDragListener;
 import cyberlink.dogtim.horizontalview.util.MaterialShadowBuilder;
 import cyberlink.dogtim.horizontalview.util.UIUtil;
 import cyberlink.dogtim.horizontalview.widgets.PlayheadView;
@@ -59,7 +60,7 @@ public class Main extends Activity {
                 
                 case DragEvent.ACTION_DRAG_ENTERED:
                     
-                    if(draggedItem.type == ItemType.OriginalItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
+                    if(draggedItem.type == ItemType.photoItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
                         int[] location = new int[2];
                         v.getLocationInWindow(location);
                         mFakeX = location[0];
@@ -98,7 +99,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    if(mIsFakingMode && targetItem.type == ItemType.WindowItem && draggedItem.type == ItemType.OriginalItem){
+                    if(mIsFakingMode && targetItem.type == ItemType.WindowItem && draggedItem.type == ItemType.photoItem){
                         int eventX = (int )event.getX();
                         int eventY = (int )event.getY();
                         if(mFakeX < eventX && (mFakeX+mFakeView.getWidth()) > eventX){
@@ -118,7 +119,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                     break;
                 case DragEvent.ACTION_DROP:
-                    if(targetItem.type == ItemType.WindowItem && mIsFakingMode && draggedItem.type == ItemType.OriginalItem){
+                    if(targetItem.type == ItemType.WindowItem && mIsFakingMode && draggedItem.type == ItemType.photoItem){
                         mFakeView.setAlpha((float)1);
                         Item itemTag = (Item) mFakeView.getTag();
                         itemTag.type = ItemType.EditingItem;
@@ -298,19 +299,20 @@ public class Main extends Activity {
         }
     }
 
-    private ImageView createImageView(String path){
+    private ImageView createImageView(String path, boolean isNeedDrag){
         Bitmap bm = BitmapHelper.decodeSampledBitmapFromUri(path, 40, 40);
         ImageView imageView = new ImageView(getApplicationContext());
         imageView.setLayoutParams(new LayoutParams(220, 220));
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setImageBitmap(bm);
         
-        setImageViewEvent(imageView);
+        setImageViewEvent(imageView, isNeedDrag);
         return imageView;
     }
 
-    private void setImageViewEvent(ImageView imageView){
-        imageView.setOnDragListener(mDragListener);
+    private void setImageViewEvent(ImageView imageView, boolean isNeedDrag){
+        if(isNeedDrag == true)
+            imageView.setOnDragListener(mDragListener);
         imageView.setLongClickable(true);
         imageView.setOnLongClickListener(mLongClickListener);
     }
@@ -319,8 +321,8 @@ public class Main extends Activity {
         LinearLayout layout = new LinearLayout(getApplicationContext());
         layout.setLayoutParams(new LayoutParams(250, 250));
         layout.setGravity(Gravity.CENTER);
-        ImageView imageView = createImageView(path);
-        imageView.setTag(new Item(path, ItemType.OriginalItem));
+        ImageView imageView = createImageView(path, false);
+        imageView.setTag(new Item(path, ItemType.photoItem));
         layout.addView(imageView);
         return layout;
     }
@@ -329,12 +331,12 @@ public class Main extends Activity {
         ImageView imageView = new ImageView(this);
         imageView.setImageResource(resourceId);
         imageView.setTag(new Item( Integer.toString(resourceId),ItemType.TransitionItem));
-        setImageViewEvent(imageView);
+        setImageViewEvent(imageView, false);
         return imageView;
     }
 
     private View createPhotoEditingView(String path) {
-        ImageView imageView = createImageView(path);
+        ImageView imageView = createImageView(path, true);
         //TODO for add transition using, it could bundle the transition view to attached view
         imageView.addOnLayoutChangeListener(mOnLayoutChangeListener);
         imageView.setTag(new Item(path,ItemType.EditingItem));
