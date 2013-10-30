@@ -94,6 +94,8 @@ public class Main extends Activity {
                         Log.d(TAG,"dogtim mFakeX: "+mFakeX+",mFakeY: "+mFakeY);
                         Log.d(TAG,"dogtim v.getX(): "+v.getX()+",v.getY(): "+v.getY());
                         Log.d(TAG,"dogtim mFakeView.getWidth(): "+mFakeView.getWidth()+",mFakeView.getHeight(): "+mFakeView.getHeight());
+                        
+                        targetItem.setTransitionView(mFakeView);
                         mDecorateTrackLayout.addView(mFakeView);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
@@ -161,6 +163,21 @@ public class Main extends Activity {
         }
     };
 
+    private View.OnLayoutChangeListener mOnLayoutChangeListener = new View.OnLayoutChangeListener(){
+
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right,
+                int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            Item item = (Item) v.getTag();
+            View transitionView = item.getTransitionView();
+            if(transitionView != null){
+                transitionView.setX((float)(v.getX()+(float)v.getWidth()) - (float)(transitionView.getWidth()/2));
+                transitionView.setY((float)(v.getY()+(float)(v.getHeight()/2)) - (float)(transitionView.getHeight()/2));
+            }
+        }
+        
+    };
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -295,7 +312,7 @@ public class Main extends Activity {
         setImageViewEvent(imageView);
         return imageView;
     }
-    
+
     private void setImageViewEvent(ImageView imageView){
         imageView.setOnDragListener(mDragListener);
         imageView.setLongClickable(true);
@@ -322,6 +339,8 @@ public class Main extends Activity {
 
     private View createPhotoEditingView(String path) {
         ImageView imageView = createImageView(path);
+        //TODO for add transition using, it could bundle the transition view to attached view
+        imageView.addOnLayoutChangeListener(mOnLayoutChangeListener);
         imageView.setTag(new Item(path,ItemType.EditingItem));
         return imageView;
     }
