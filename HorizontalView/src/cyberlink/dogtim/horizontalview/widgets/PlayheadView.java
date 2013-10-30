@@ -3,6 +3,7 @@ package cyberlink.dogtim.horizontalview.widgets;
 import cyberlink.dogtim.horizontalview.Project;
 import cyberlink.dogtim.horizontalview.R;
 import cyberlink.dogtim.horizontalview.util.StringUtils;
+import cyberlink.dogtim.horizontalview.util.UIUtil;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -58,12 +59,8 @@ public class PlayheadView extends View {
                     .getDimension(R.dimen.playhead_tick_height);
 
             // Get the screen width
-            final Display display = ((WindowManager) context
-                    .getSystemService(Context.WINDOW_SERVICE))
-                    .getDefaultDisplay();
-            final DisplayMetrics metrics = new DisplayMetrics();
-            display.getMetrics(metrics);
-            mScreenWidth = metrics.widthPixels;
+            mScreenWidth = UIUtil.getScreenWidth(context);
+            
             // Listen to scroll events and repaint this view as needed
             mScrollListener = new ScrollViewListener() {
 

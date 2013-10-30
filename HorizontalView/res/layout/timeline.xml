@@ -35,12 +35,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" />
-                <ImageView                        
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/desc"
-                    android:src="@drawable/_001">
-                </ImageView>
             </FrameLayout>
         </cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout>
 
