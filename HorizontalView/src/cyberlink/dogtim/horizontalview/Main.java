@@ -2,7 +2,6 @@ package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
 
-import cyberlink.dogtim.horizontalview.listener.EditingItemOnDragListener;
 import cyberlink.dogtim.horizontalview.util.MaterialShadowBuilder;
 import cyberlink.dogtim.horizontalview.util.UIUtil;
 import cyberlink.dogtim.horizontalview.widgets.PlayheadView;
