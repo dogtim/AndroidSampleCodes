@@ -89,7 +89,6 @@ public class Main extends Activity {
                                 LinearLayout.LayoutParams.WRAP_CONTENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT
                         ));
-                        targetItem.setTransitionView(mFakeView);
                         mDecorateTrackLayout.addView(mFakeView);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
@@ -128,6 +127,7 @@ public class Main extends Activity {
                         resetFake();
                     }else if(mIsFakingMode && draggedItem.type == ItemType.TransitionItem){
                         mFakeView.setAlpha((float)1);
+                        targetItem.setTransitionView(mFakeView);
                         measureTimeLineWidth();
                         mTimelineLayout.invalidate();
                         resetFake();
@@ -156,50 +156,22 @@ public class Main extends Activity {
     }
     
     private View.OnClickListener mOnMediaItemClickListener = new View.OnClickListener() {
-        ImageView _leftCircleView;
-        ImageView _rightCircleView;
-        
         @Override
         public void onClick(View v) {
             Item item = (Item)v.getTag();
             v.setSelected(!v.isSelected());
-            if( item.type == ItemType.EditingItem){
-                if (v.isSelected())
-                    addCircleView(v);
+            if(item.type == ItemType.EditingItem){
+                if (v.isSelected()){
+                    item.setTwinSelectionView(v, mDecorateTrackLayout, mActivity);
+                }
                 else {
-                    mDecorateTrackLayout.removeView(_leftCircleView);
-                    mDecorateTrackLayout.removeView(_rightCircleView);
+                    TwinSelectionViews twinSelectionView = item.getTwinSelectionView();
+                    if(twinSelectionView != null){
+                        twinSelectionView.removeTwinSeleciton(mDecorateTrackLayout);
+                    } 
                 }
             }
         }
-        private void addCircleView(View v){
-            _leftCircleView = new ImageView(mActivity);
-            _rightCircleView = new ImageView(mActivity);
-            setCircleViewProperty(_leftCircleView);
-            setCircleViewProperty(_rightCircleView);
-
-            _leftCircleView.setX((float)(v.getX()) - (float)(_leftCircleView.getMeasuredWidth()/2));
-            _leftCircleView.setY((float)(v.getY()+(float)(v.getMeasuredHeight()/2)) - (float)(_leftCircleView.getMeasuredHeight()/2));
-            
-            _rightCircleView.setX((float)(v.getX()+(float)(v.getMeasuredWidth())) - (float)(_rightCircleView.getMeasuredWidth()/2));
-            _rightCircleView.setY((float)(v.getY()+(float)(v.getMeasuredHeight()/2)) - (float)(_rightCircleView.getMeasuredHeight()/2));
-
-            mDecorateTrackLayout.addView(_leftCircleView);
-            mDecorateTrackLayout.addView(_rightCircleView);
-        }
-        
-        private void setCircleViewProperty(ImageView v){
-            v.setImageResource(R.drawable.select_btn);
-            v.setLayoutParams(new FrameLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            ));
-
-            int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-            int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
-            v.measure(w, h); 
-        }
-        
     }; 
     
     private View.OnLongClickListener mOnLongClickListener = new View.OnLongClickListener() {
@@ -222,6 +194,10 @@ public class Main extends Activity {
             if(transitionView != null){
                 transitionView.setX((float)(v.getX()+(float)v.getWidth()) - (float)(transitionView.getWidth()/2));
                 transitionView.setY((float)(v.getY()+(float)(v.getHeight()/2)) - (float)(transitionView.getHeight()/2));
+            }
+            TwinSelectionViews twinSelectionViews = item.getTwinSelectionView();
+            if(twinSelectionViews != null){
+                twinSelectionViews.setPostion(v);
             }
         }
         
