@@ -1,7 +1,7 @@
 package cyberlink.dogtim.horizontalview;
 
 public enum ItemType {
-    photoItem("photo item"),
+    PhotoItem("photo item"),
     TransitionItem("transition item"),
 
     EditingItem("editing item"),

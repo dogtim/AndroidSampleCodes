@@ -59,7 +59,7 @@ public class Main extends Activity {
                 
                 case DragEvent.ACTION_DRAG_ENTERED:
                     
-                    if(draggedItem.type == ItemType.photoItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
+                    if(draggedItem.type == ItemType.PhotoItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
                         int[] location = new int[2];
                         v.getLocationInWindow(location);
                         mFakeX = location[0];
@@ -98,7 +98,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
                     break;
                 case DragEvent.ACTION_DRAG_LOCATION:
-                    if(mIsFakingMode && targetItem.type == ItemType.WindowItem && draggedItem.type == ItemType.photoItem){
+                    if(mIsFakingMode && targetItem.type == ItemType.WindowItem && draggedItem.type == ItemType.PhotoItem){
                         int eventX = (int )event.getX();
                         int eventY = (int )event.getY();
                         if(mFakeX < eventX && (mFakeX+mFakeView.getWidth()) > eventX){
@@ -118,7 +118,7 @@ public class Main extends Activity {
                     Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                     break;
                 case DragEvent.ACTION_DROP:
-                    if(targetItem.type == ItemType.WindowItem && mIsFakingMode && draggedItem.type == ItemType.photoItem){
+                    if(targetItem.type == ItemType.WindowItem && mIsFakingMode && draggedItem.type == ItemType.PhotoItem){
                         mFakeView.setAlpha((float)1);
                         Item itemTag = (Item) mFakeView.getTag();
                         itemTag.type = ItemType.EditingItem;
@@ -299,9 +299,9 @@ public class Main extends Activity {
     }
 
     private ImageView createImageView(String path, boolean isNeedDrag){
-        Bitmap bm = BitmapHelper.decodeSampledBitmapFromUri(path, 40, 40);
-        ImageView imageView = new ImageView(getApplicationContext());
-        imageView.setLayoutParams(new LayoutParams(220, 220));
+        Bitmap bm = BitmapHelper.decodeSampledBitmapFromUri(path, 80, 80);
+        ImageView imageView = (ImageView) getLayoutInflater().inflate(R.layout.media_item, null);//new ImageView(getApplicationContext());
+        imageView.setLayoutParams(new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setImageBitmap(bm);
         
@@ -318,16 +318,16 @@ public class Main extends Activity {
     
     private View createPhotoMaterialView(String path) {
         LinearLayout layout = new LinearLayout(getApplicationContext());
-        layout.setLayoutParams(new LayoutParams(250, 250));
+        layout.setLayoutParams(new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         layout.setGravity(Gravity.CENTER);
         ImageView imageView = createImageView(path, false);
-        imageView.setTag(new Item(path, ItemType.photoItem));
+        imageView.setTag(new Item(path, ItemType.PhotoItem));
         layout.addView(imageView);
         return layout;
     }
 
     private View createTransitionMaterialView(int resourceId) {
-        ImageView imageView = new ImageView(this);
+        ImageView imageView = (ImageView) getLayoutInflater().inflate(R.layout.media_item, null);
         imageView.setImageResource(resourceId);
         imageView.setTag(new Item( Integer.toString(resourceId),ItemType.TransitionItem));
         setImageViewEvent(imageView, false);
@@ -343,7 +343,7 @@ public class Main extends Activity {
     }
 
     private View createTransitionEditingView(String resourceId) {
-        ImageView imageView = new ImageView(this);
+        ImageView imageView = (ImageView) getLayoutInflater().inflate(R.layout.media_item, null);
         imageView.setImageResource(Integer.parseInt(resourceId));
         imageView.setTag(new Item(resourceId,ItemType.EditingItem));
         return imageView;

@@ -24,4 +24,14 @@
         <item name="android:scrollbarTrackHorizontal">@drawable/scrollbar_vertical_track</item>
         <item name="android:scrollbarSize">30dp</item>
     </style>
+
+    <style name="media_timeline_item">
+        <item name="android:longClickable">true</item>
+        <item name="android:paddingLeft">5dip</item>
+        <item name="android:paddingRight">5dip</item>
+        <item name="android:paddingTop">5dip</item>
+        <item name="android:paddingBottom">5dip</item>
+        <item name="android:background">@drawable/timeline_item_selector</item>
+    </style>
+    
 </resources>
