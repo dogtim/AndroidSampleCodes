@@ -42,6 +42,7 @@ public class Main extends Activity {
     private int mFakeX = -1;
     private int mFakeY = -1;
     private Project mProject;
+    private Activity mActivity = this;
     
     private View.OnDragListener mDragListener = new View.OnDragListener() {
         public boolean onDrag(View v, DragEvent event) {
@@ -146,7 +147,7 @@ public class Main extends Activity {
             return true;
         }
     };
-    
+
     private void resetFake(){
         mIsFakingMode = false;
         mFakeView=null;
@@ -154,7 +155,54 @@ public class Main extends Activity {
         mFakeY = 0;
     }
     
-    private View.OnLongClickListener mLongClickListener = new View.OnLongClickListener() {
+    private View.OnClickListener mOnMediaItemClickListener = new View.OnClickListener() {
+        ImageView _leftCircleView;
+        ImageView _rightCircleView;
+        
+        @Override
+        public void onClick(View v) {
+            Item item = (Item)v.getTag();
+            v.setSelected(!v.isSelected());
+            if( item.type == ItemType.EditingItem){
+                if (v.isSelected())
+                    addCircleView(v);
+                else {
+                    mDecorateTrackLayout.removeView(_leftCircleView);
+                    mDecorateTrackLayout.removeView(_rightCircleView);
+                }
+            }
+        }
+        private void addCircleView(View v){
+            _leftCircleView = new ImageView(mActivity);
+            _rightCircleView = new ImageView(mActivity);
+            setCircleViewProperty(_leftCircleView);
+            setCircleViewProperty(_rightCircleView);
+
+            _leftCircleView.setX((float)(v.getX()) - (float)(_leftCircleView.getMeasuredWidth()/2));
+            _leftCircleView.setY((float)(v.getY()+(float)(v.getMeasuredHeight()/2)) - (float)(_leftCircleView.getMeasuredHeight()/2));
+            
+            _rightCircleView.setX((float)(v.getX()+(float)(v.getMeasuredWidth())) - (float)(_rightCircleView.getMeasuredWidth()/2));
+            _rightCircleView.setY((float)(v.getY()+(float)(v.getMeasuredHeight()/2)) - (float)(_rightCircleView.getMeasuredHeight()/2));
+
+            mDecorateTrackLayout.addView(_leftCircleView);
+            mDecorateTrackLayout.addView(_rightCircleView);
+        }
+        
+        private void setCircleViewProperty(ImageView v){
+            v.setImageResource(R.drawable.select_btn);
+            v.setLayoutParams(new FrameLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            ));
+
+            int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+            int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+            v.measure(w, h); 
+        }
+        
+    }; 
+    
+    private View.OnLongClickListener mOnLongClickListener = new View.OnLongClickListener() {
         public boolean onLongClick(View v) {
             ClipData data = null;//ClipData.newPlainText("dot", "Dot : " + v.toString());
             View.DragShadowBuilder shadowView = new View.DragShadowBuilder (v);
@@ -179,7 +227,7 @@ public class Main extends Activity {
         
     };
     
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+    private View.OnClickListener mOnTabClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             int viewID = v.getId();
@@ -225,8 +273,8 @@ public class Main extends Activity {
     private void setMaterialButton(){
         ImageView photoBtn = (ImageView) findViewById(R.id.photo_material_icon);
         ImageView transitionBtn = (ImageView) findViewById(R.id.transition_material_icon);
-        photoBtn.setOnClickListener(mOnClickListener);
-        transitionBtn.setOnClickListener(mOnClickListener);
+        photoBtn.setOnClickListener(mOnTabClickListener);
+        transitionBtn.setOnClickListener(mOnTabClickListener);
         
     }
     /**
@@ -312,10 +360,10 @@ public class Main extends Activity {
     private void setImageViewEvent(ImageView imageView, boolean isNeedDrag){
         if(isNeedDrag == true)
             imageView.setOnDragListener(mDragListener);
-        imageView.setLongClickable(true);
-        imageView.setOnLongClickListener(mLongClickListener);
+        imageView.setOnClickListener(mOnMediaItemClickListener);
+        imageView.setOnLongClickListener(mOnLongClickListener);
     }
-    
+
     private View createPhotoMaterialView(String path) {
         LinearLayout layout = new LinearLayout(getApplicationContext());
         layout.setLayoutParams(new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
