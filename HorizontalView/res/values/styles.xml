@@ -27,10 +27,10 @@
 
     <style name="media_timeline_item">
         <item name="android:longClickable">true</item>
-        <item name="android:paddingLeft">5dip</item>
-        <item name="android:paddingRight">5dip</item>
-        <item name="android:paddingTop">5dip</item>
-        <item name="android:paddingBottom">5dip</item>
+        <item name="android:paddingLeft">2dip</item>
+        <item name="android:paddingRight">2dip</item>
+        <item name="android:paddingTop">2dip</item>
+        <item name="android:paddingBottom">2dip</item>
         <item name="android:background">@drawable/timeline_item_selector</item>
     </style>
     
