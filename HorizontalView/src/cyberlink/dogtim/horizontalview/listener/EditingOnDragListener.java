@@ -4,11 +4,13 @@ import cyberlink.dogtim.horizontalview.Item;
 import cyberlink.dogtim.horizontalview.ItemType;
 import cyberlink.dogtim.horizontalview.Main;
 import cyberlink.dogtim.horizontalview.Project;
+import cyberlink.dogtim.horizontalview.R;
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class EditingOnDragListener implements View.OnDragListener {
@@ -149,7 +151,6 @@ public class EditingOnDragListener implements View.OnDragListener {
                     mMainActivity.measureTimeLineWidth();
                     mTimelineLayout.invalidate();
                     mIsFakingMode = true;
-                    return false;
                 }
                 Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
                 break;
@@ -161,7 +162,7 @@ public class EditingOnDragListener implements View.OnDragListener {
                 Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
                 break;
             case DragEvent.ACTION_DROP:
-                if(mIsFakingMode && draggedItem.type == ItemType.TransitionItem){
+                if(mIsFakingMode){
                     mFakeView.setAlpha((float)1);
                     targetItem.setTransitionView(mFakeView);
                     mMainActivity.measureTimeLineWidth();
@@ -182,7 +183,61 @@ public class EditingOnDragListener implements View.OnDragListener {
         }
         return true;
     }
+    private boolean onReorder(View v, DragEvent event){
+        final int action = event.getAction();
+        View draggedView = (View) event.getLocalState();
+        Item draggedItem = (Item) draggedView.getTag();
+        Item targetItem = (Item) v.getTag();
 
+        if (targetItem == null)
+            return true;
+        switch (action) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                Log.d(TAG,"onDrag ACTION_DRAG_STARTED");
+                break;
+            
+            case DragEvent.ACTION_DRAG_ENTERED:
+                if(targetItem.type == ItemType.EditingItem && !mIsFakingMode && v != draggedView){
+                    mFakeView = mMainActivity.getLayoutInflater().inflate(R.layout.sperate_line, null);
+                    mFakeView.setX((float)(v.getX()+(float)v.getWidth()));
+                    mFakeView.setY((float)v.getY()-25);
+                    mFakeView.setLayoutParams(new FrameLayout.LayoutParams(
+                            3,
+                            v.getWidth()
+                    ));
+                    mDecorateTrackLayout.addView(mFakeView);
+                    mIsFakingMode = true;
+                }
+                Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
+                break;
+            case DragEvent.ACTION_DRAG_LOCATION:
+                if(mIsFakingMode && targetItem.type != ItemType.EditingItem){
+                    mDecorateTrackLayout.removeView(mFakeView);
+                    resetFake();
+                }
+                Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
+                break;
+            case DragEvent.ACTION_DROP:
+                if(mIsFakingMode){
+                    mDecorateTrackLayout.removeView(mFakeView);
+                    resetFake();
+                    mPhotoTrackLayout.removeView(draggedView);
+                    mPhotoTrackLayout.addView(draggedView, mPhotoTrackLayout.indexOfChild(v)+1);
+                }
+                Log.d(TAG,"onDrag ACTION_DROP");
+                break;
+            case DragEvent.ACTION_DRAG_EXITED:
+                Log.d(TAG,"onDrag ACTION_DRAG_EXITED");
+                break;
+            case DragEvent.ACTION_DRAG_ENDED:
+                Log.d(TAG,"onDrag ACTION_DRAG_ENDED");
+                break;
+            default:
+                Log.d(TAG,"onDrag default");
+                break;
+        }
+        return true;
+    }
     private void resetFake(){
         mIsFakingMode = false;
         mFakeView=null;
@@ -198,14 +253,12 @@ public class EditingOnDragListener implements View.OnDragListener {
             return onInsertPhoto(v, event);
         }else if(draggedItem.type == ItemType.TransitionItem){
             return onInsertTransition(v, event);
-        }else {
+        }else if(draggedItem.type == ItemType.EditingItem){
+            return onReorder(v, event);
+        }else{
             Log.e(TAG, "You should define what the type of item you dragged");
         }
         
         return true;
     }
-    
-    
-    
-    
 }
