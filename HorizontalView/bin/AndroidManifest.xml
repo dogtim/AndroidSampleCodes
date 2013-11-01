@@ -7,7 +7,7 @@
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="18" />
-1
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -20,7 +20,6 @@
             android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

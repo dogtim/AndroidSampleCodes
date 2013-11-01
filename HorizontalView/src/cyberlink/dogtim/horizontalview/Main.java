@@ -2,6 +2,7 @@ package cyberlink.dogtim.horizontalview;
 
 import java.util.ArrayList;
 
+import cyberlink.dogtim.horizontalview.listener.EditingOnDragListener;
 import cyberlink.dogtim.horizontalview.util.MaterialShadowBuilder;
 import cyberlink.dogtim.horizontalview.util.UIUtil;
 import cyberlink.dogtim.horizontalview.widgets.PlayheadView;
@@ -17,7 +18,6 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,125 +36,11 @@ public class Main extends Activity {
     private TimelineRelativeLayout mTimelineLayout;
     private TimelineHorizontalScrollView mTHSView;
     private PlayheadView mPlayheadView;
-    
-    private View mFakeView = null;
-    private boolean mIsFakingMode = false;
-    private int mFakeX = -1;
-    private int mFakeY = -1;
+
     private Project mProject;
     private Activity mActivity = this;
-    
-    private View.OnDragListener mDragListener = new View.OnDragListener() {
-        public boolean onDrag(View v, DragEvent event) {
-            final int action = event.getAction();
-            View draggedView = (View) event.getLocalState();
-            Item draggedItem = (Item) draggedView.getTag();
-            Item targetItem = (Item) v.getTag();
+    private EditingOnDragListener mDragListener;
 
-            if (targetItem == null)
-                return true;
-            switch (action) {
-                case DragEvent.ACTION_DRAG_STARTED:
-                    Log.d(TAG,"onDrag ACTION_DRAG_STARTED");
-                    break;
-                
-                case DragEvent.ACTION_DRAG_ENTERED:
-                    
-                    if(draggedItem.type == ItemType.PhotoItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
-                        int[] location = new int[2];
-                        v.getLocationInWindow(location);
-                        mFakeX = location[0];
-                        mFakeY = location[1];
-                        int id = mPhotoTrackLayout.indexOfChild(v);
-                        mFakeView = createPhotoEditingView(draggedItem.path);
-                        mFakeView.setAlpha((float)0.3);
-                        mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
-                        mPhotoTrackLayout.addView(mFakeView,id);
-                        mProject.addEditingItem(id, draggedItem);
-                        measureTimeLineWidth();
-                        mTimelineLayout.invalidate();
-                        mIsFakingMode = true;
-                        return false;
-                    }else if(draggedItem.type == ItemType.TransitionItem && targetItem.type == ItemType.EditingItem && !mIsFakingMode){
-                        int[] location = new int[2];
-                        v.getLocationInWindow(location);
-                        mFakeX = location[0];
-                        mFakeY = location[1];
-                        mFakeView = createTransitionEditingView(draggedItem.path);
-                        mFakeView.setAlpha((float)0.3);
-                        mFakeView.setTag(new Item("fakePath", ItemType.FakeItem));
-                        mFakeView.setX((float)(v.getX()+(float)v.getWidth()) - (float)(draggedView.getWidth()/2));
-                        mFakeView.setY((float)(v.getY()+(float)(v.getHeight()/2)) - (float)(draggedView.getHeight()/2));
-                        mFakeView.setLayoutParams(new FrameLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        ));
-                        mDecorateTrackLayout.addView(mFakeView);
-                        measureTimeLineWidth();
-                        mTimelineLayout.invalidate();
-                        mIsFakingMode = true;
-                        return false;
-                    }
-                    Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
-                    break;
-                case DragEvent.ACTION_DRAG_LOCATION:
-                    if(mIsFakingMode && targetItem.type == ItemType.WindowItem && draggedItem.type == ItemType.PhotoItem){
-                        int eventX = (int )event.getX();
-                        int eventY = (int )event.getY();
-                        if(mFakeX < eventX && (mFakeX+mFakeView.getWidth()) > eventX){
-                            if(mFakeY < eventY && (mFakeY+mFakeView.getHeight()) > eventY){
-                                return true;
-                            }
-                        }
-                        mProject.removeEditingItem(mPhotoTrackLayout.indexOfChild(mFakeView));
-                        mPhotoTrackLayout.removeView(mFakeView);
-                        measureTimeLineWidth();
-                        mTimelineLayout.invalidate();
-                        resetFake();
-                    }else if(mIsFakingMode && targetItem.type != ItemType.EditingItem && draggedItem.type == ItemType.TransitionItem){
-                        mDecorateTrackLayout.removeView(mFakeView);
-                        resetFake();
-                    }
-                    Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
-                    break;
-                case DragEvent.ACTION_DROP:
-                    if(targetItem.type == ItemType.WindowItem && mIsFakingMode && draggedItem.type == ItemType.PhotoItem){
-                        mFakeView.setAlpha((float)1);
-                        Item itemTag = (Item) mFakeView.getTag();
-                        itemTag.type = ItemType.EditingItem;
-                        measureTimeLineWidth();
-                        mTimelineLayout.invalidate();
-                        resetFake();
-                    }else if(mIsFakingMode && draggedItem.type == ItemType.TransitionItem){
-                        mFakeView.setAlpha((float)1);
-                        targetItem.setTransitionView(mFakeView);
-                        measureTimeLineWidth();
-                        mTimelineLayout.invalidate();
-                        resetFake();
-                    }
-                    Log.d(TAG,"onDrag ACTION_DROP");
-                    break;
-                case DragEvent.ACTION_DRAG_EXITED:
-                    Log.d(TAG,"onDrag ACTION_DRAG_EXITED");
-                    break;
-                case DragEvent.ACTION_DRAG_ENDED:
-                    Log.d(TAG,"onDrag ACTION_DRAG_ENDED");
-                    break;
-                default:
-                    Log.d(TAG,"onDrag default");
-                    break;
-            }
-            return true;
-        }
-    };
-
-    private void resetFake(){
-        mIsFakingMode = false;
-        mFakeView=null;
-        mFakeX = 0;
-        mFakeY = 0;
-    }
-    
     private View.OnClickListener mOnMediaItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -234,6 +120,8 @@ public class Main extends Activity {
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
         mPlayheadView = (PlayheadView)findViewById(R.id.timeline_playhead );
         mTHSView = (TimelineHorizontalScrollView)findViewById(R.id.timeline_scroller);
+        mDragListener = new EditingOnDragListener(this,mPhotoTrackLayout, mTimelineLayout, mDecorateTrackLayout);
+        
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
         getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItem));
         
@@ -301,7 +189,7 @@ public class Main extends Activity {
      *   we can not get correct value in onCreate function. <p>
      *   @see <a href="http://www.eoeandroid.com/thread-240677-1-1.html">getWidth() == 0</a>
      */
-    private void measureTimeLineWidth(){
+    public void measureTimeLineWidth(){
 
         final int screenWidth = UIUtil.getScreenWidth(getApplicationContext());
         
@@ -358,7 +246,7 @@ public class Main extends Activity {
         return imageView;
     }
 
-    private View createPhotoEditingView(String path) {
+    public View createPhotoEditingView(String path) {
         ImageView imageView = createImageView(path, true);
         //TODO for add transition using, it could bundle the transition view to attached view
         imageView.addOnLayoutChangeListener(mOnLayoutChangeListener);
@@ -366,7 +254,7 @@ public class Main extends Activity {
         return imageView;
     }
 
-    private View createTransitionEditingView(String resourceId) {
+    public View createTransitionEditingView(String resourceId) {
         ImageView imageView = (ImageView) getLayoutInflater().inflate(R.layout.media_item, null);
         imageView.setImageResource(Integer.parseInt(resourceId));
         imageView.setTag(new Item(resourceId,ItemType.EditingItem));
