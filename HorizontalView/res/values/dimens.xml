@@ -12,4 +12,7 @@
     <dimen name="playhead_margin_top_not_ok">-5dip</dimen>
     <dimen name="playhead_margin_bottom">22dip</dimen>
     <dimen name="playhead_tick_height">12dip</dimen>
+    
+    <dimen name="scroll_controller_width">40dp</dimen>
+    <dimen name="scroll_controller_height">300dp</dimen>
 </resources>

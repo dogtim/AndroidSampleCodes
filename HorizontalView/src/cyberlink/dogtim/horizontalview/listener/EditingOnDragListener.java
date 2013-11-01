@@ -5,6 +5,7 @@ import cyberlink.dogtim.horizontalview.ItemType;
 import cyberlink.dogtim.horizontalview.Main;
 import cyberlink.dogtim.horizontalview.Project;
 import cyberlink.dogtim.horizontalview.R;
+import cyberlink.dogtim.horizontalview.widgets.TimelineHorizontalScrollView;
 import cyberlink.dogtim.horizontalview.widgets.TimelineRelativeLayout;
 import android.util.Log;
 import android.view.DragEvent;
@@ -31,15 +32,18 @@ public class EditingOnDragListener implements View.OnDragListener {
     private TimelineRelativeLayout mTimelineLayout;
     private LinearLayout mPhotoTrackLayout;
     private FrameLayout mDecorateTrackLayout;
+    private TimelineHorizontalScrollView mTHSView;
     private Project mProject;
     
     public EditingOnDragListener(Main mainAcitivty, LinearLayout editingTrackLayout, 
-            TimelineRelativeLayout timelineLayout, FrameLayout decorateTrackLayout){
+            TimelineRelativeLayout timelineLayout, FrameLayout decorateTrackLayout,
+            TimelineHorizontalScrollView THSView){
         mMainActivity = mainAcitivty;
         mPhotoTrackLayout = editingTrackLayout;
         mProject = Project.get();
         mTimelineLayout = timelineLayout;
         mDecorateTrackLayout = decorateTrackLayout;
+        mTHSView = THSView;
     }
     
     private boolean onInsertPhoto(View v, DragEvent event){
@@ -50,11 +54,7 @@ public class EditingOnDragListener implements View.OnDragListener {
 
         if (targetItem == null)
             return true;
-        
-        if (targetItem.type == ItemType.EditingItem)
-            Log.w(TAG, "Target type: EditingItem");
-        else if (targetItem.type == ItemType.WindowItem)
-            Log.w(TAG, "Target type: WindowItem");
+
         switch (action) {
             case DragEvent.ACTION_DRAG_STARTED:
                 Log.d(TAG,"onDrag ACTION_DRAG_STARTED");
@@ -183,6 +183,7 @@ public class EditingOnDragListener implements View.OnDragListener {
         }
         return true;
     }
+
     private boolean onReorder(View v, DragEvent event){
         final int action = event.getAction();
         View draggedView = (View) event.getLocalState();
@@ -238,6 +239,43 @@ public class EditingOnDragListener implements View.OnDragListener {
         }
         return true;
     }
+
+    private boolean onScroll(View v, DragEvent event){
+        final int action = event.getAction();
+        final int OFFSET_X = 100;
+        switch (action) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                Log.d(TAG,"onDrag ACTION_DRAG_STARTED");
+                break;
+            
+            case DragEvent.ACTION_DRAG_ENTERED:
+                Log.d(TAG,"onDrag ACTION_DRAG_ENTERED");
+                break;
+            case DragEvent.ACTION_DRAG_LOCATION:
+                final int position = mTHSView.getScrollX();
+                if(v.getId() == R.id.right_scroll_controller){
+                    mTHSView.scrollTo(position + OFFSET_X, mTHSView.getTop());
+                }else if(v.getId() == R.id.left_scroll_controller){
+                    mTHSView.scrollTo(position - OFFSET_X, mTHSView.getTop());
+                }
+                Log.d(TAG,"onDrag ACTION_DRAG_LOCATION");
+                break;
+            case DragEvent.ACTION_DROP:
+                Log.d(TAG,"onDrag ACTION_DROP");
+                break;
+            case DragEvent.ACTION_DRAG_EXITED:
+                Log.d(TAG,"onDrag ACTION_DRAG_EXITED");
+                break;
+            case DragEvent.ACTION_DRAG_ENDED:
+                Log.d(TAG,"onDrag ACTION_DRAG_ENDED");
+                break;
+            default:
+                Log.d(TAG,"onDrag default");
+                break;
+        }
+        return true;
+    }
+    
     private void resetFake(){
         mIsFakingMode = false;
         mFakeView=null;
@@ -249,6 +287,10 @@ public class EditingOnDragListener implements View.OnDragListener {
     public boolean onDrag(View v, DragEvent event) {
         View draggedView = (View) event.getLocalState();
         Item draggedItem = (Item) draggedView.getTag();
+        if(v.getId() == R.id.right_scroll_controller || v.getId() == R.id.left_scroll_controller){
+            return onScroll(v, event);
+        }
+        
         if(draggedItem.type == ItemType.PhotoItem){
             return onInsertPhoto(v, event);
         }else if(draggedItem.type == ItemType.TransitionItem){

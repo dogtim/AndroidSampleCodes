@@ -1,64 +1,96 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:background="@android:color/black"
-    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".Main" >
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:background="@android:color/black"
         android:orientation="vertical">
-        <include layout="@layout/tab_material"/>
-        <include layout="@layout/media_selector" />
-    </LinearLayout>
-    
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="bottom">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin" >
+
+            <include layout="@layout/tab_material" />
+
+            <include layout="@layout/media_selector" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal" >
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/track_icon_duration"
-                        android:text="@string/duration"
-                        android:gravity="center"
-                        android:textColor="@android:color/white"/>
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.33"
-                        android:contentDescription="@string/desc"
-                        android:src="@drawable/track_icon_video_photo" />
-                    <ImageView
-                        android:id="@+id/image_arrow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.33"
-                        android:contentDescription="@string/desc"
-                        android:src="@drawable/track_icon_audio" />
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/track_icon_duration"
+                    android:gravity="center"
+                    android:text="@string/duration"
+                    android:textColor="@android:color/white" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.33"
+                    android:contentDescription="@string/desc"
+                    android:src="@drawable/track_icon_video_photo" />
+
+                <ImageView
+                    android:id="@+id/image_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.33"
+                    android:contentDescription="@string/desc"
+                    android:src="@drawable/track_icon_audio" />
             </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" >
+
                 <include layout="@layout/timeline" />
+
                 <ImageView
                     android:id="@+id/timeline_indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:scaleType="fitXY"
                     android:contentDescription="@string/desc"
+                    android:scaleType="fitXY"
                     android:src="@drawable/timeline_indicator" />
             </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+
+    <ImageView
+        android:id="@+id/left_scroll_controller"
+        android:layout_width="@dimen/scroll_controller_width"
+        android:layout_height="@dimen/scroll_controller_height"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/desc"
+        android:scaleType="fitXY"
+        android:src="@drawable/scroll_controller_bar" />
+    
+    <ImageView
+        android:id="@+id/right_scroll_controller"
+        android:layout_width="@dimen/scroll_controller_width"
+        android:layout_height="@dimen/scroll_controller_height"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/desc"
+        android:scaleType="fitXY"
+        android:src="@drawable/scroll_controller_bar" />
+</RelativeLayout>

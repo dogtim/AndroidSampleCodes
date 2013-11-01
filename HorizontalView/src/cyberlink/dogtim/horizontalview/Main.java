@@ -120,18 +120,26 @@ public class Main extends Activity {
         mTimelineLayout = (TimelineRelativeLayout)findViewById(R.id.timeline);
         mPlayheadView = (PlayheadView)findViewById(R.id.timeline_playhead );
         mTHSView = (TimelineHorizontalScrollView)findViewById(R.id.timeline_scroller);
-        mDragListener = new EditingOnDragListener(this,mPhotoTrackLayout, mTimelineLayout, mDecorateTrackLayout);
-        
+        mDragListener = new EditingOnDragListener(this,mPhotoTrackLayout, mTimelineLayout, mDecorateTrackLayout, mTHSView);
+
         getWindow().getDecorView().getRootView().setOnDragListener(mDragListener);
         getWindow().getDecorView().getRootView().setTag(new Item("window", ItemType.WindowItem));
         
         setMaterialButton();
         mProject = Project.get();
         mPlayheadView.setProject(mProject);
+        setScrollController();
         initAnimation();
         setTimeLineEditingItem();
         setPhotoMaterial();
         measureTimeLineWidth();
+    }
+    private void setScrollController(){
+        ImageView leftScrollController = (ImageView)findViewById(R.id.left_scroll_controller);
+        ImageView rightScrollController = (ImageView)findViewById(R.id.right_scroll_controller);
+        
+        rightScrollController.setOnDragListener(mDragListener);
+        leftScrollController.setOnDragListener(mDragListener);
     }
 
     private void setMaterialButton(){
