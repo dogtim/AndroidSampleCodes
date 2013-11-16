@@ -40,7 +40,7 @@ public class Main extends Activity {
     private Project mProject;
     private Activity mActivity = this;
     private EditingOnDragListener mDragListener;
-
+    private boolean DEBUG_HV = false;
     private View.OnClickListener mOnMediaItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -133,6 +133,7 @@ public class Main extends Activity {
         setTimeLineEditingItem();
         setPhotoMaterial();
         measureTimeLineWidth();
+        if (DEBUG_HV) cyberlink.dogtim.horizontalview.util.ViewServer.get(this).addWindow(this);
     }
     private void setScrollController(){
         ImageView leftScrollController = (ImageView)findViewById(R.id.left_scroll_controller);
