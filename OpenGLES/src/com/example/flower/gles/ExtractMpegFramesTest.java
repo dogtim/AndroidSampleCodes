@@ -30,7 +30,6 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.Log;
 import android.view.Surface;
 
@@ -89,7 +88,6 @@ public class ExtractMpegFramesTest {
      * caller.
      */
     private static class ExtractMpegFramesWrapper implements Runnable {
-        private Throwable mThrowable;
         private ExtractMpegFramesTest mTest;
 
         private ExtractMpegFramesWrapper(ExtractMpegFramesTest test) {
@@ -101,7 +99,7 @@ public class ExtractMpegFramesTest {
             try {
                 mTest.extractMpegFrames();
             } catch (Throwable th) {
-                mThrowable = th;
+                Log.e(TAG, "Throwable: " + th.getMessage());
             }
         }
 
@@ -225,15 +223,13 @@ public class ExtractMpegFramesTest {
     void doExtract(MediaExtractor extractor, int trackIndex,
             MediaCodec decoder, CodecOutputSurface outputSurface)
             throws IOException {
-        final int TIMEOUT_USEC = 100000;
+        final int TIMEOUT_USEC = 10000;
         ByteBuffer[] decoderInputBuffers = decoder.getInputBuffers();
         // MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
         int inputChunk = 0;
         int decodeCount = 0;
         long frameSaveTime = 0;
 
-        boolean outputDone = false;
-        boolean inputDone = false;
         boolean sawInputEOS = false;
         long inputEOSPTS = -1;
         long lastPTS = -1;
@@ -244,7 +240,7 @@ public class ExtractMpegFramesTest {
             // Queue Input buffer
             for (; !sawInputEOS;) {
                 long presentationTimeUs = 0;
-                int inputBufferIndex = decoder.dequeueInputBuffer(10000);
+                int inputBufferIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC);
                 if (inputBufferIndex >= 0) {
                     ByteBuffer dstBuf = decoderInputBuffers[inputBufferIndex];
 
@@ -282,7 +278,7 @@ public class ExtractMpegFramesTest {
                     }
 
                     outputBufferIndex = decoder
-                            .dequeueOutputBuffer(info, 10000);
+                            .dequeueOutputBuffer(info, TIMEOUT_USEC);
                     if (outputBufferIndex >= 0) {
                         break;
                     }
@@ -293,7 +289,7 @@ public class ExtractMpegFramesTest {
             // handle output buffer
             //
             if (outputBufferIndex < 0) {
-                outputBufferIndex = decoder.dequeueOutputBuffer(info, 10000);
+                outputBufferIndex = decoder.dequeueOutputBuffer(info, TIMEOUT_USEC);
                 Log.i(TAG, "outputBufferIndex = " + outputBufferIndex);
             }
 
@@ -1043,20 +1039,6 @@ public class ExtractMpegFramesTest {
             GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES,
                     GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
             checkGlError("glTexParameter");
-        }
-
-        /**
-         * Replaces the fragment shader. Pass in null to reset to default.
-         */
-        public void changeFragmentShader(String fragmentShader) {
-            if (fragmentShader == null) {
-                fragmentShader = FRAGMENT_SHADER;
-            }
-            GLES20.glDeleteProgram(mProgram);
-            mProgram = createProgram(VERTEX_SHADER, fragmentShader);
-            if (mProgram == 0) {
-                throw new RuntimeException("failed creating program");
-            }
         }
 
         private int loadShader(int shaderType, String source) {
