@@ -1,6 +1,7 @@
 package com.example.flower;
 
 import com.example.flower.gles.ExtractMpegFramesTest;
+import com.example.flower.util.MediaInfo;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -31,6 +32,15 @@ public class MainActivity extends Activity {
                 } catch (Throwable e) {
                     Log.i(TAG, "Exception: " + e.getMessage());
                 }
+            }
+        });
+
+        Button button2 = (Button) this.findViewById(R.id.button2);
+        button2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                MediaInfo.queryMediaCodecInfo();
             }
         });
     }

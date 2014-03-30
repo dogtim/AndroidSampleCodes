@@ -137,7 +137,7 @@ public class ExtractMpegFramesTest {
             // see if the input
             // file exists so we can throw a better one if it's not there.
             if (!inputFile.exists()) {
-                Log.e(TAG, "[dogtim] sorry, input file not exist !");
+                Log.e(TAG, " sorry, input file not exist !");
                 return;
             }
             if (!inputFile.canRead()) {
@@ -207,7 +207,7 @@ public class ExtractMpegFramesTest {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
             if (mime.startsWith("video/")) {
-                Log.d(TAG, "[dogtim] Extractor selected track " + i + " ("
+                Log.d(TAG, " Extractor selected track " + i + " ("
                         + mime + "): " + format);
                 if (VERBOSE) {
                     Log.d(TAG, "Extractor selected track " + i + " (" + mime
@@ -305,10 +305,10 @@ public class ExtractMpegFramesTest {
                  * outputBufferIndex, isOutputEOS); }
                  */
                 decoder.releaseOutputBuffer(outputBufferIndex, true);
-                Log.v(TAG, "[dogtim] outputBufferIndex: " + outputBufferIndex);
+                Log.v(TAG, " outputBufferIndex: " + outputBufferIndex);
                 outputSurface.awaitNewImage();
                 outputSurface.drawImage(true);
-                Log.v(TAG, "[dogtim] decodeCount: " + decodeCount);
+                Log.v(TAG, " decodeCount: " + decodeCount);
                 if (decodeCount < MAX_FRAMES) {
                     File outputFile = new File(
                             FILES_DIR,
@@ -434,7 +434,7 @@ public class ExtractMpegFramesTest {
             formatString = "COLOR_FormatYUV420Planar";
         }
 
-        Log.i(TAG, "[dogtim] formatString: " + formatString);
+        Log.i(TAG, " formatString: " + formatString);
     }
 
     /**
@@ -540,7 +540,7 @@ public class ExtractMpegFramesTest {
                                     + decodeCount);
                         outputSurface.awaitNewImage();
                         outputSurface.drawImage(true);
-                        Log.v(TAG, "[dogtim] decodeCount: " + decodeCount);
+                        Log.v(TAG, " decodeCount: " + decodeCount);
                         if (decodeCount < MAX_FRAMES) {
                             File outputFile = new File(
                                     FILES_DIR,
@@ -789,7 +789,7 @@ public class ExtractMpegFramesTest {
         // SurfaceTexture callback
         @Override
         public void onFrameAvailable(SurfaceTexture st) {
-            Log.d(TAG, "[dogtim] new frame available");
+            Log.d(TAG, " new frame available");
             if (VERBOSE)
                 Log.d(TAG, "new frame available");
             synchronized (mFrameSyncObject) {
@@ -874,7 +874,7 @@ public class ExtractMpegFramesTest {
                     bos.close();
             }
 
-            Log.d(TAG, "[dogtim] Saved " + mWidth + "x" + mHeight + " frame as '"
+            Log.d(TAG, " Saved " + mWidth + "x" + mHeight + " frame as '"
                     + filename + "'");
 
         }
